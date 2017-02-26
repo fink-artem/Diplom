@@ -1,4 +1,4 @@
-package com.fink;
+package com.fink.ontology;
 
 public enum SyntaxRel {
 

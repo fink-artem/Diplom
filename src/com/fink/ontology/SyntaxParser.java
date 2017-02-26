@@ -1,4 +1,4 @@
-package com.fink;
+package com.fink.ontology;
 
 import java.io.File;
 import java.io.IOException;
