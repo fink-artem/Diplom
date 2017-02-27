@@ -10,9 +10,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.jena.ontology.OntModel;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.formats.OWLXMLDocumentFormat;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.xml.sax.SAXException;
 import ru.nsu.cg.MainFrame;
 
@@ -25,12 +28,15 @@ public class InitMainWindow extends MainFrame {
 
     public InitMainWindow() throws Exception {
         super();
-        
+
         File file = new File("./answer2.xml");
         OntologyCreator ontologyCreator = new OntologyCreator();
-        OntModel ontModel = ontologyCreator.run(file);
-        ontModel.write(new FileOutputStream("out.owl"));
-        
+        OWLOntology owlOntology = ontologyCreator.run(file);
+        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+        File file = folder.newFile("out.owl");
+        IRI destination = IRI.create(new File("./out.owl").toURI());
+        manager.saveOntology(owlOntology, new OWLXMLDocumentFormat(), destination);
+
         setTitle("DocCheck");
         setBounds(Toolkit.getDefaultToolkit().getScreenSize().width / 2 - MIN_WIDTH / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2 - MIN_HEIGHT / 2, MIN_WIDTH, MIN_HEIGHT);
         setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
@@ -65,12 +71,8 @@ public class InitMainWindow extends MainFrame {
     }
 
     public void onOpen() {
-        try {
-            File file = getOpenFileName("txt", "TXT");
-            OntologyCreator ontologyCreator = new OntologyCreator();
-            OntModel ontModel = ontologyCreator.run(file);
-        } catch (ParserConfigurationException | SAXException | IOException | NullPointerException ex) {
-        }
+        File file = getOpenFileName("txt", "TXT");
+
     }
 
     public void onSave() {

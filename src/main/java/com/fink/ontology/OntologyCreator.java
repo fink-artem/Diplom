@@ -8,10 +8,12 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.jena.ontology.OntClass;
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntModelSpec;
-import org.apache.jena.rdf.model.ModelFactory;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -29,8 +31,8 @@ public class OntologyCreator {
     private static final String LEMMA_CHILD = "lemmchld";
     private static final String LEMMA_PARENT = "lemmprnt";
     private static final String ENCODING = "WINDOWS-1251";
-    private static final String SOURCE = "http://www.semanticweb.org/admin/ontologies";
-    private static final String NS = SOURCE + "#";
+    private static final String BASE = "http://www.semanticweb.org/admin/ontologies";
+    private static final String NS = BASE + "#";
 
     class Rel {
 
@@ -40,11 +42,13 @@ public class OntologyCreator {
         String lemma_child;
         String lemma_parent;
     }
+    
+    private final OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+    private final OWLDataFactory factory = manager.getOWLDataFactory();
+    private OWLOntology owlOntology;
 
-    private OntModel ontModel;
-
-    public OntModel run(File f) throws ParserConfigurationException, SAXException, IOException {
-        ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM_RULE_INF);
+    public OWLOntology run(File f) throws ParserConfigurationException, SAXException, IOException, OWLOntologyCreationException {
+        owlOntology = manager.createOntology(IRI.create(BASE));
         DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         InputSource inputStore = new InputSource(new FileInputStream(f));
         inputStore.setEncoding(ENCODING);
@@ -57,7 +61,7 @@ public class OntologyCreator {
                 parseSent(nodeSecondLevel);
             }
         }
-        return ontModel;
+        return owlOntology;
     }
 
     private void parseSent(Node Sent) {
@@ -74,7 +78,7 @@ public class OntologyCreator {
             Rel rel = resList.get(i);
             switch (SyntaxRel.convert(rel.name)) {
                 case PODL:
-                    ontModel.createClass(NS + rel.lemma_child);
+                    factory.getOWLClass(IRI.create(NS + rel.lemma_child));
                     break;
             }
         }
