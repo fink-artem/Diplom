@@ -4,13 +4,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -42,12 +47,14 @@ public class OntologyCreator {
         String lemma_child;
         String lemma_parent;
     }
-    
-    private final OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-    private final OWLDataFactory factory = manager.getOWLDataFactory();
+
+    private OWLDataFactory factory;
+    private OWLOntologyManager manager;
     private OWLOntology owlOntology;
 
-    public OWLOntology run(File f) throws ParserConfigurationException, SAXException, IOException, OWLOntologyCreationException {
+    public OWLOntology run(File f, OWLOntologyManager manager) throws ParserConfigurationException, SAXException, IOException, OWLOntologyCreationException {
+        this.manager = manager;
+        factory = manager.getOWLDataFactory();
         owlOntology = manager.createOntology(IRI.create(BASE));
         DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         InputSource inputStore = new InputSource(new FileInputStream(f));
@@ -78,7 +85,13 @@ public class OntologyCreator {
             Rel rel = resList.get(i);
             switch (SyntaxRel.convert(rel.name)) {
                 case PODL:
-                    factory.getOWLClass(IRI.create(NS + rel.lemma_child));
+                    OWLClass owlClass = factory.getOWLClass(IRI.create(NS + rel.lemma_child));
+                    manager.addAxiom(owlOntology, factory.getOWLDeclarationAxiom(owlClass));
+                    OWLDataProperty owlDataProperty = factory.getOWLDataProperty(IRI.create(NS + rel.lemma_parent));
+                    Set<OWLAxiom> domainsAndRanges = new HashSet<>();
+                    domainsAndRanges.add(factory.getOWLDataPropertyDomainAxiom(owlDataProperty, owlClass));
+                    manager.addAxiom(owlOntology, factory.getOWLDeclarationAxiom(owlDataProperty));
+                    manager.addAxioms(owlOntology, domainsAndRanges);
                     break;
             }
         }

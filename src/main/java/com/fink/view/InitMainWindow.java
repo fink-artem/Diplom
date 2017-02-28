@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,6 +14,8 @@ import javax.swing.JOptionPane;
 import javax.xml.parsers.ParserConfigurationException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.formats.OWLXMLDocumentFormat;
+import org.semanticweb.owlapi.io.StreamDocumentTarget;
+import org.semanticweb.owlapi.io.StringDocumentTarget;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -31,11 +34,10 @@ public class InitMainWindow extends MainFrame {
 
         File file = new File("./answer2.xml");
         OntologyCreator ontologyCreator = new OntologyCreator();
-        OWLOntology owlOntology = ontologyCreator.run(file);
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-        File file = folder.newFile("out.owl");
-        IRI destination = IRI.create(new File("./out.owl").toURI());
-        manager.saveOntology(owlOntology, new OWLXMLDocumentFormat(), destination);
+        OWLOntology owlOntology = ontologyCreator.run(file, manager);
+        IRI destination = IRI.create(new File("out.owl").toURI());
+        manager.saveOntology(owlOntology,new OWLXMLDocumentFormat(), destination);
 
         setTitle("DocCheck");
         setBounds(Toolkit.getDefaultToolkit().getScreenSize().width / 2 - MIN_WIDTH / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2 - MIN_HEIGHT / 2, MIN_WIDTH, MIN_HEIGHT);

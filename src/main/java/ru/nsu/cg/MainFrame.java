@@ -81,7 +81,7 @@ public class MainFrame extends JFrame {
         item.setMnemonic(mnemonic);
         item.setToolTipText(title);
         if (icon != null) {
-            item.setIcon(new ImageIcon(getClass().getResource("resources/" + icon), title));
+            item.setIcon(new ImageIcon("./src/main/resources/"+icon, title));
         }
         final Method method = getClass().getMethod(actionMethod);
         item.addActionListener(new ActionListener() {
