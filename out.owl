@@ -12,15 +12,58 @@
     <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
     <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
     <Declaration>
-        <DataProperty IRI="#ДОПУСКАТЬСЯ"/>
+        <Class IRI="#ПРЕБЫВАНИЕ"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ПРЕБЫВАНИЕ"/>
+        <Class IRI="#ОБЩЕЖИТИЕ"/>
     </Declaration>
-    <DataPropertyDomain>
-        <DataProperty IRI="#ДОПУСКАТЬСЯ"/>
+    <Declaration>
+        <Class IRI="#ДОКУМЕНТ"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#8"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#ДОПУСКАТЬСЯ"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#01"/>
+    </Declaration>
+    <EquivalentClasses>
+        <Class IRI="#ДОКУМЕНТ"/>
+        <ObjectIntersectionOf>
+            <ObjectIntersectionOf>
+                <ObjectIntersectionOf>
+                    <ObjectSomeValuesFrom>
+                        <ObjectProperty IRI="#ДОПУСКАТЬСЯ"/>
+                        <Class IRI="#ПРЕБЫВАНИЕ"/>
+                    </ObjectSomeValuesFrom>
+                    <ObjectSomeValuesFrom>
+                        <ObjectProperty IRI="#ДОПУСКАТЬСЯ"/>
+                        <Class IRI="#01"/>
+                    </ObjectSomeValuesFrom>
+                </ObjectIntersectionOf>
+                <ObjectSomeValuesFrom>
+                    <ObjectProperty IRI="#ДОПУСКАТЬСЯ"/>
+                    <Class IRI="#8"/>
+                </ObjectSomeValuesFrom>
+            </ObjectIntersectionOf>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="#ДОПУСКАТЬСЯ"/>
+                <Class IRI="#ОБЩЕЖИТИЕ"/>
+            </ObjectSomeValuesFrom>
+        </ObjectIntersectionOf>
+    </EquivalentClasses>
+    <DisjointClasses>
+        <Class IRI="#ДОКУМЕНТ"/>
+        <Class IRI="#ОБЩЕЖИТИЕ"/>
         <Class IRI="#ПРЕБЫВАНИЕ"/>
-    </DataPropertyDomain>
+        <Class IRI="#01"/>
+        <Class IRI="#8"/>
+    </DisjointClasses>
+    <FunctionalObjectProperty>
+        <ObjectProperty IRI="#ДОПУСКАТЬСЯ"/>
+    </FunctionalObjectProperty>
 </Ontology>
 
 

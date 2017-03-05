@@ -5,20 +5,26 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLFunctionalObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.util.OWLEntityRemover;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -38,6 +44,7 @@ public class OntologyCreator {
     private static final String ENCODING = "WINDOWS-1251";
     private static final String BASE = "http://www.semanticweb.org/admin/ontologies";
     private static final String NS = BASE + "#";
+    private static final String DOCUMENT_NAME = "ДОКУМЕНТ";
 
     class Rel {
 
@@ -51,11 +58,14 @@ public class OntologyCreator {
     private OWLDataFactory factory;
     private OWLOntologyManager manager;
     private OWLOntology owlOntology;
+    private OWLClass mainOwlClass;
+    private OWLClassExpression owlClassExpression;
 
     public OWLOntology run(File f, OWLOntologyManager manager) throws ParserConfigurationException, SAXException, IOException, OWLOntologyCreationException {
         this.manager = manager;
         factory = manager.getOWLDataFactory();
         owlOntology = manager.createOntology(IRI.create(BASE));
+        mainOwlClass = addClass(DOCUMENT_NAME);
         DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         InputSource inputStore = new InputSource(new FileInputStream(f));
         inputStore.setEncoding(ENCODING);
@@ -68,6 +78,8 @@ public class OntologyCreator {
                 parseSent(nodeSecondLevel);
             }
         }
+        OWLEquivalentClassesAxiom owlEquivalentClassesAxiom = factory.getOWLEquivalentClassesAxiom(mainOwlClass, owlClassExpression);
+        manager.addAxiom(owlOntology, owlEquivalentClassesAxiom);
         return owlOntology;
     }
 
@@ -81,20 +93,60 @@ public class OntologyCreator {
             }
         }
         int size = resList.size();
+        String podl = "";
+        String scas = "";
+        OWLObjectProperty owlObjectProperty = null;
+        OWLClass owlClass;
         for (int i = size - 1; i >= 0; i--) {
             Rel rel = resList.get(i);
             switch (SyntaxRel.convert(rel.name)) {
                 case PODL:
-                    OWLClass owlClass = factory.getOWLClass(IRI.create(NS + rel.lemma_child));
-                    manager.addAxiom(owlOntology, factory.getOWLDeclarationAxiom(owlClass));
-                    OWLDataProperty owlDataProperty = factory.getOWLDataProperty(IRI.create(NS + rel.lemma_parent));
+                    podl = rel.lemma_child;
+                    scas = rel.lemma_parent;
+
+                    owlClass = addClass(rel.lemma_child);
+
+                    owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + rel.lemma_parent));
+                    OWLFunctionalObjectPropertyAxiom owlfdpa = factory.getOWLFunctionalObjectPropertyAxiom(owlObjectProperty);
+                    manager.applyChange(new AddAxiom(owlOntology, owlfdpa));
+
                     Set<OWLAxiom> domainsAndRanges = new HashSet<>();
-                    domainsAndRanges.add(factory.getOWLDataPropertyDomainAxiom(owlDataProperty, owlClass));
-                    manager.addAxiom(owlOntology, factory.getOWLDeclarationAxiom(owlDataProperty));
+                    domainsAndRanges.add(factory.getOWLObjectPropertyDomainAxiom(owlObjectProperty, owlClass));
                     manager.addAxioms(owlOntology, domainsAndRanges);
+
+                    addEquivalent(owlObjectProperty, owlClass);
                     break;
+                case PG:
+                    owlClass = addClass(rel.lemma_child);
+                    Set<OWLOntology> owlOntologys = new HashSet<>();
+                    owlOntologys.add(owlOntology);
+                    OWLDisjointClassesAxiom owlDisjointClassesAxiom = factory.getOWLDisjointClassesAxiom(owlOntology.getClassesInSignature());
+                    OWLEntityRemover remover = new OWLEntityRemover(owlOntologys);
+                    owlOntology.getClassesInSignature().stream().forEach(owlc -> owlc.accept(remover));
+                    manager.applyChanges(remover.getChanges());
+                    manager.applyChange(new AddAxiom(owlOntology, owlDisjointClassesAxiom));
+
+                    addEquivalent(owlObjectProperty, owlClass);
             }
         }
+    }
+
+    void addEquivalent(OWLObjectProperty owlObjectProperty, OWLClass owlClass) {
+        if (owlObjectProperty == null) {
+            return;
+        }
+        OWLClassExpression newExpression = factory.getOWLObjectSomeValuesFrom(owlObjectProperty, owlClass);
+        if (owlClassExpression == null) {
+            owlClassExpression = newExpression;
+        } else {
+            owlClassExpression = factory.getOWLObjectIntersectionOf(owlClassExpression, newExpression);
+        }
+    }
+
+    OWLClass addClass(String name) {
+        OWLClass owlClass = factory.getOWLClass(IRI.create(NS + name));
+        manager.addAxiom(owlOntology, factory.getOWLDeclarationAxiom(owlClass));
+        return owlClass;
     }
 
     Rel parseRel(NamedNodeMap namedNodeMap) {
