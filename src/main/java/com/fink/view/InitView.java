@@ -1,16 +1,24 @@
 package com.fink.view;
 
-
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 
 public class InitView extends JPanel {
 
-    private int width = 500;
-    private int height = 500;
+    private JTextArea leftTextArea = new JTextArea();
+    private JTextArea rightTextArea = new JTextArea();
 
     public InitView() {
-       setBackground(Color.WHITE);
+        setLayout(new BorderLayout());
+        setBackground(Color.WHITE);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftTextArea, rightTextArea);
+        splitPane.setResizeWeight(0.5);
+        splitPane.setEnabled(false);
+        add(splitPane);
     }
 
 }

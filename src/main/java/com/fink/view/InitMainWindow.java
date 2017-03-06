@@ -5,21 +5,14 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.xml.parsers.ParserConfigurationException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.formats.OWLXMLDocumentFormat;
-import org.semanticweb.owlapi.io.StreamDocumentTarget;
-import org.semanticweb.owlapi.io.StringDocumentTarget;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.xml.sax.SAXException;
 import ru.nsu.cg.MainFrame;
 
 public class InitMainWindow extends MainFrame {
@@ -37,7 +30,7 @@ public class InitMainWindow extends MainFrame {
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         OWLOntology owlOntology = ontologyCreator.run(file, manager);
         IRI destination = IRI.create(new File("out.owl").toURI());
-        manager.saveOntology(owlOntology,new OWLXMLDocumentFormat(), destination);
+        manager.saveOntology(owlOntology, new OWLXMLDocumentFormat(), destination);
 
         setTitle("DocCheck");
         setBounds(Toolkit.getDefaultToolkit().getScreenSize().width / 2 - MIN_WIDTH / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2 - MIN_HEIGHT / 2, MIN_WIDTH, MIN_HEIGHT);
@@ -91,7 +84,7 @@ public class InitMainWindow extends MainFrame {
 
     public static void main(String[] args) throws Exception {
         InitMainWindow mainFrame = new InitMainWindow();
-        //mainFrame.setVisible(true);
+        mainFrame.setVisible(true);
     }
 
 }
