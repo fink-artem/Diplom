@@ -1,16 +1,14 @@
 package ru.nsu.cg;
 
+import com.fink.view.InitMainWindow;
 import java.awt.event.MouseEvent;
-import javax.swing.JLabel;
 import javax.swing.event.MouseInputListener;
 
 public class MessageStatusBarListener implements MouseInputListener {
 
-    private JLabel statusBar;
-    private String text;
+    private final String text;
 
-    public MessageStatusBarListener(JLabel statusBar, String text) {
-        this.statusBar = statusBar;
+    public MessageStatusBarListener(String text) {
         this.text = text;
     }
 
@@ -32,7 +30,7 @@ public class MessageStatusBarListener implements MouseInputListener {
 
     @Override
     public void mouseExited(MouseEvent me) {
-        statusBar.setText("Ready");
+        InitMainWindow.getStatusBar().setText(InitMainWindow.DEFAULT_TEXT);
     }
 
     @Override
@@ -41,7 +39,7 @@ public class MessageStatusBarListener implements MouseInputListener {
 
     @Override
     public void mouseMoved(MouseEvent me) {
-        statusBar.setText(text);
+        InitMainWindow.getStatusBar().setText(text);
     }
 
 }

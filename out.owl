@@ -18,6 +18,15 @@
         <Class IRI="#ОБЩЕЖИТИЕ"/>
     </Declaration>
     <Declaration>
+        <ObjectProperty IRI="#ДОПУСКАТЬСЯ_С"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#ДОПУСКАТЬСЯ_ДО"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#ДОПУСКАТЬСЯ_В"/>
+    </Declaration>
+    <Declaration>
         <Class IRI="#ДОКУМЕНТ"/>
     </Declaration>
     <Declaration>
@@ -31,25 +40,26 @@
     </Declaration>
     <EquivalentClasses>
         <Class IRI="#ДОКУМЕНТ"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="#ДОПУСКАТЬСЯ"/>
+            <Class IRI="#ПРЕБЫВАНИЕ"/>
+        </ObjectSomeValuesFrom>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="#ПРЕБЫВАНИЕ"/>
         <ObjectIntersectionOf>
             <ObjectIntersectionOf>
-                <ObjectIntersectionOf>
-                    <ObjectSomeValuesFrom>
-                        <ObjectProperty IRI="#ДОПУСКАТЬСЯ"/>
-                        <Class IRI="#ПРЕБЫВАНИЕ"/>
-                    </ObjectSomeValuesFrom>
-                    <ObjectSomeValuesFrom>
-                        <ObjectProperty IRI="#ДОПУСКАТЬСЯ"/>
-                        <Class IRI="#01"/>
-                    </ObjectSomeValuesFrom>
-                </ObjectIntersectionOf>
                 <ObjectSomeValuesFrom>
-                    <ObjectProperty IRI="#ДОПУСКАТЬСЯ"/>
+                    <ObjectProperty IRI="#ДОПУСКАТЬСЯ_ДО"/>
+                    <Class IRI="#01"/>
+                </ObjectSomeValuesFrom>
+                <ObjectSomeValuesFrom>
+                    <ObjectProperty IRI="#ДОПУСКАТЬСЯ_С"/>
                     <Class IRI="#8"/>
                 </ObjectSomeValuesFrom>
             </ObjectIntersectionOf>
             <ObjectSomeValuesFrom>
-                <ObjectProperty IRI="#ДОПУСКАТЬСЯ"/>
+                <ObjectProperty IRI="#ДОПУСКАТЬСЯ_В"/>
                 <Class IRI="#ОБЩЕЖИТИЕ"/>
             </ObjectSomeValuesFrom>
         </ObjectIntersectionOf>
@@ -61,9 +71,6 @@
         <Class IRI="#01"/>
         <Class IRI="#8"/>
     </DisjointClasses>
-    <FunctionalObjectProperty>
-        <ObjectProperty IRI="#ДОПУСКАТЬСЯ"/>
-    </FunctionalObjectProperty>
 </Ontology>
 
 
