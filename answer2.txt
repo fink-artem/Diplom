@@ -1,0 +1,25 @@
+<chunk>
+<input>test2.txt</input>
+<sent>
+	<synvar>
+		<clause type="EMPTY">Студент</clause>
+	</synvar>
+	<synvar>
+		<clause type="ПРЧ">— учащийся высшего учебного заведения .</clause>
+		<group type="ПРИЛ_СУЩ">высшего учебного заведения</group>
+	</synvar>
+	<synvar>
+		<clause type="EMPTY">— учащийся высшего учебного заведения .</clause>
+		<group type="ПРИЛ_СУЩ">высшего учебного заведения</group>
+		<group type="ГЕНИТ_ИГ">учащийся высшего учебного заведения</group>
+	</synvar>
+	<synvar>
+		<clause type="EMPTY">— учащийся высшего учебного заведения .</clause>
+		<group type="ПРИЛ_СУЩ">высшего учебного заведения</group>
+	</synvar>
+	<rel name="ПРИЛ_СУЩ" gramrel="ср,рд,ед," lemmprnt="ЗАВЕДЕНИЕ" grmprnt="но,ср,рд,ед," lemmchld="ВЫСОКИЙ" grmchld="прев,кач,но,од,ср,рд,ед," > заведения -> высшего </rel>
+	<rel name="ПРИЛ_СУЩ" gramrel="ср,рд,ед," lemmprnt="ЗАВЕДЕНИЕ" grmprnt="но,ср,рд,ед," lemmchld="УЧЕБНЫЙ" grmchld="кач,но,од,ср,рд,ед," > заведения -> учебного </rel>
+</sent>
+</chunk>
+
+
