@@ -1,0 +1,22 @@
+<chunk>
+<input>test3.txt</input>
+<sent>
+	<synvar>
+		<clause type="√Ћ_Ћ»„Ќ">ћама мыла раму</clause>
+		<group type="ѕ–яћ_ƒќѕ">мыла раму</group>
+	</synvar>
+	<synvar>
+		<clause type="√Ћ_Ћ»„Ќ">, а папа пил воду .</clause>
+		<group type="ѕ–яћ_ƒќѕ">пил воду</group>
+	</synvar>
+	<synvar>
+		<clause type="√Ћ_Ћ»„Ќ">, а папа пил воду .</clause>
+	</synvar>
+	<rel name="ѕ–яћ_ƒќѕ" gramrel="дст,пе,нс,прш,жр,ед," lemmprnt="ћџ“№" grmprnt="дст,пе,нс,прш,жр,ед," lemmchld="–јћј" grmchld="но,жр,вн,ед," > мыла -> раму </rel>
+	<rel name="ѕќƒЋ" gramrel="" lemmprnt="ћџ“№" grmprnt="дст,пе,нс,прш,жр,ед," lemmchld="ћјћј" grmchld="од,жр,им,ед," > мыла -> ћама </rel>
+	<rel name="ѕ–яћ_ƒќѕ" gramrel="дст,пе,нс,прш,мр,ед," lemmprnt="ѕ»“№" grmprnt="дст,пе,нс,прш,мр,ед," lemmchld="¬ќƒј" grmchld="но,жр,вн,ед," > пил -> воду </rel>
+	<rel name="ѕќƒЋ" gramrel="" lemmprnt="ѕ»“№" grmprnt="дст,пе,нс,прш,мр,ед," lemmchld="ѕјѕј" grmchld="од,мр,им,ед," > пил -> папа </rel>
+</sent>
+</chunk>
+
+

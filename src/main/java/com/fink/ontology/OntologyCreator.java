@@ -4,17 +4,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -24,7 +20,6 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.util.OWLEntityRemover;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -77,10 +72,12 @@ public class OntologyCreator {
             Node nodeSecondLevel = nodeSecondLevelList.item(i);
             if (nodeSecondLevel.getNodeType() != Node.TEXT_NODE && nodeSecondLevel.getNodeName().equals(SENTENCE)) {
                 parseSent(nodeSecondLevel);
-                saveEquivalent(podlOwlClass, podlClassExpression);
+                saveEquivalent();
             }
         }
-        saveEquivalent(mainOwlClass, mainClassExpression);
+        saveEquivalentDocument();
+        OWLDisjointClassesAxiom owlDisjointClassesAxiom = factory.getOWLDisjointClassesAxiom(owlOntology.getClassesInSignature());
+        manager.applyChange(new AddAxiom(owlOntology, owlDisjointClassesAxiom));
         return owlOntology;
     }
 
@@ -93,7 +90,6 @@ public class OntologyCreator {
                 resList.add(parseRel(node.getAttributes()));
             }
         }
-        String podl;
         String scas = "";
         int size = resList.size();
         OWLObjectProperty owlObjectProperty;
@@ -102,34 +98,29 @@ public class OntologyCreator {
             Rel rel = resList.get(i);
             switch (SyntaxRel.convert(rel.name)) {
                 case PODL:
-                    podl = rel.lemma_child;
+                    saveEquivalent();
                     scas = rel.lemma_parent;
-
                     owlClass = addClass(rel.lemma_child);
                     podlOwlClass = owlClass;
-
                     owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + rel.lemma_parent));
                     //OWLFunctionalObjectPropertyAxiom owlfdpa = factory.getOWLFunctionalObjectPropertyAxiom(owlObjectProperty);
-                    //manager.applyChange(new AddAxiom(owlOntology, owlObjectProperty));
+                    //manager.applyChange(new AddAxiom(owlOntology, owlObjectProperty));                    
 
-                    /*Set<OWLAxiom> domainsAndRanges = new HashSet<>();
-                     domainsAndRanges.add(factory.getOWLObjectPropertyDomainAxiom(owlObjectProperty, owlClass));
-                     manager.addAxioms(owlOntology, domainsAndRanges);*/
                     addEquivalentDocument(owlObjectProperty, owlClass);
                     break;
                 case PG:
                     owlClass = addClass(rel.lemma_child);
-                    Set<OWLOntology> owlOntologys = new HashSet<>();
-                    owlOntologys.add(owlOntology);
-                    OWLDisjointClassesAxiom owlDisjointClassesAxiom = factory.getOWLDisjointClassesAxiom(owlOntology.getClassesInSignature());
-                    OWLEntityRemover remover = new OWLEntityRemover(owlOntologys);
-                    owlOntology.getClassesInSignature().stream().forEach(owlc -> owlc.accept(remover));
-                    manager.applyChanges(remover.getChanges());
-                    manager.applyChange(new AddAxiom(owlOntology, owlDisjointClassesAxiom));
 
                     owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + scas + "_" + rel.lemma_parent));
 
                     addEquivalent(owlObjectProperty, owlClass);
+                    break;
+                case PRYAM_DOP:
+                    owlClass = addClass(rel.lemma_child);
+                    owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + rel.lemma_parent));
+
+                    addEquivalent(owlObjectProperty, owlClass);
+                    break;
             }
         }
     }
@@ -144,6 +135,7 @@ public class OntologyCreator {
         } else {
             podlClassExpression = factory.getOWLObjectIntersectionOf(podlClassExpression, newExpression);
         }
+
     }
 
     void addEquivalentDocument(OWLObjectProperty owlObjectProperty, OWLClass owlClass) {
@@ -164,10 +156,22 @@ public class OntologyCreator {
         return owlClass;
     }
 
-    void saveEquivalent(OWLClass owlClass, OWLClassExpression owlClassExpression) {
-        OWLEquivalentClassesAxiom owlEquivalentClassesAxiom = factory.getOWLEquivalentClassesAxiom(owlClass, owlClassExpression);
+    void saveEquivalent() {
+        if (podlClassExpression == null) {
+            return;
+        }
+        OWLEquivalentClassesAxiom owlEquivalentClassesAxiom = factory.getOWLEquivalentClassesAxiom(podlOwlClass, podlClassExpression);
         manager.addAxiom(owlOntology, owlEquivalentClassesAxiom);
         podlClassExpression = null;
+    }
+
+    void saveEquivalentDocument() {
+        if (mainClassExpression == null) {
+            return;
+        }
+        OWLEquivalentClassesAxiom owlEquivalentClassesAxiom = factory.getOWLEquivalentClassesAxiom(mainOwlClass, mainClassExpression);
+        manager.addAxiom(owlOntology, owlEquivalentClassesAxiom);
+        mainClassExpression = null;
     }
 
     Rel parseRel(NamedNodeMap namedNodeMap) {

@@ -12,64 +12,59 @@
     <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
     <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
     <Declaration>
-        <Class IRI="#ПРЕБЫВАНИЕ"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#ОБЩЕЖИТИЕ"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="#ДОПУСКАТЬСЯ_С"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="#ДОПУСКАТЬСЯ_ДО"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="#ДОПУСКАТЬСЯ_В"/>
+        <Class IRI="#МАМА"/>
     </Declaration>
     <Declaration>
         <Class IRI="#ДОКУМЕНТ"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#8"/>
+        <Class IRI="#ПАПА"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#ДОПУСКАТЬСЯ"/>
+        <Class IRI="#РАМА"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#01"/>
+        <Class IRI="#ВОДА"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#ПИТЬ"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#МЫТЬ"/>
     </Declaration>
     <EquivalentClasses>
         <Class IRI="#ДОКУМЕНТ"/>
-        <ObjectSomeValuesFrom>
-            <ObjectProperty IRI="#ДОПУСКАТЬСЯ"/>
-            <Class IRI="#ПРЕБЫВАНИЕ"/>
-        </ObjectSomeValuesFrom>
-    </EquivalentClasses>
-    <EquivalentClasses>
-        <Class IRI="#ПРЕБЫВАНИЕ"/>
         <ObjectIntersectionOf>
-            <ObjectIntersectionOf>
-                <ObjectSomeValuesFrom>
-                    <ObjectProperty IRI="#ДОПУСКАТЬСЯ_ДО"/>
-                    <Class IRI="#01"/>
-                </ObjectSomeValuesFrom>
-                <ObjectSomeValuesFrom>
-                    <ObjectProperty IRI="#ДОПУСКАТЬСЯ_С"/>
-                    <Class IRI="#8"/>
-                </ObjectSomeValuesFrom>
-            </ObjectIntersectionOf>
             <ObjectSomeValuesFrom>
-                <ObjectProperty IRI="#ДОПУСКАТЬСЯ_В"/>
-                <Class IRI="#ОБЩЕЖИТИЕ"/>
+                <ObjectProperty IRI="#МЫТЬ"/>
+                <Class IRI="#МАМА"/>
+            </ObjectSomeValuesFrom>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="#ПИТЬ"/>
+                <Class IRI="#ПАПА"/>
             </ObjectSomeValuesFrom>
         </ObjectIntersectionOf>
     </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="#МАМА"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="#МЫТЬ"/>
+            <Class IRI="#РАМА"/>
+        </ObjectSomeValuesFrom>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="#ПАПА"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="#ПИТЬ"/>
+            <Class IRI="#ВОДА"/>
+        </ObjectSomeValuesFrom>
+    </EquivalentClasses>
     <DisjointClasses>
+        <Class IRI="#ВОДА"/>
         <Class IRI="#ДОКУМЕНТ"/>
-        <Class IRI="#ОБЩЕЖИТИЕ"/>
-        <Class IRI="#ПРЕБЫВАНИЕ"/>
-        <Class IRI="#01"/>
-        <Class IRI="#8"/>
+        <Class IRI="#МАМА"/>
+        <Class IRI="#ПАПА"/>
+        <Class IRI="#РАМА"/>
     </DisjointClasses>
 </Ontology>
 
