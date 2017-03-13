@@ -1,0 +1,13 @@
+<chunk>
+<input>temp.txt</input>
+<sent>
+	<synvar>
+		<clause type="√Ћ_Ћ»„Ќ">мальчик любит девочку</clause>
+		<group type="ѕ–яћ_ƒќѕ">любит девочку</group>
+	</synvar>
+	<rel name="ѕ–яћ_ƒќѕ" gramrel="дст,пе,нс,3л,нст,ед," lemmprnt="ЋёЅ»“№" grmprnt="дст,пе,нс,3л,нст,ед," lemmchld="ƒ≈¬ќ„ ј" grmchld="од,жр,вн,ед," > любит -> девочку </rel>
+	<rel name="ѕќƒЋ" gramrel="" lemmprnt="ЋёЅ»“№" grmprnt="дст,пе,нс,3л,нст,ед," lemmchld="ћјЋ№„» " grmchld="од,мр,им,ед," > любит -> мальчик </rel>
+</sent>
+</chunk>
+
+

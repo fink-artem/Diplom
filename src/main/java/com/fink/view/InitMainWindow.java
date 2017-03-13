@@ -1,6 +1,7 @@
 package com.fink.view;
 
 import com.fink.ontology.OntologyCreator;
+import com.fink.parser.AnalyzeException;
 import com.fink.parser.Parser;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -10,11 +11,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.xml.parsers.ParserConfigurationException;
 import org.semanticweb.owlapi.formats.OWLXMLDocumentFormat;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.xml.sax.SAXException;
 import ru.nsu.cg.MainFrame;
 
 public class InitMainWindow extends MainFrame {
@@ -28,12 +35,6 @@ public class InitMainWindow extends MainFrame {
 
     public InitMainWindow() throws Exception {
         super();
-
-        File file = new File("./answer3.txt");
-        OntologyCreator ontologyCreator = new OntologyCreator();
-        OWLOntology owlOntology = ontologyCreator.run(file);
-        IRI destination = IRI.create(new File("out.owl").toURI());
-        owlOntology.getOWLOntologyManager().saveOntology(owlOntology, new OWLXMLDocumentFormat(), destination);
 
         setTitle("DocCheck");
         setBounds(Toolkit.getDefaultToolkit().getScreenSize().width / 2 - MIN_WIDTH / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2 - MIN_HEIGHT / 2, MIN_WIDTH, MIN_HEIGHT);
@@ -94,15 +95,25 @@ public class InitMainWindow extends MainFrame {
             JOptionPane.showMessageDialog(this, "Документы не найдены", "Ошибка", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        String text = view.getLeftText();
-        if (!text.equals("")) {
-            File f = new File("answer1.xml");
-            Parser.run(text, f);
+
+        try {
+            textAnalyze(view.getLeftText(), new File("answer1.xml"), new File("out.owl"));
+            textAnalyze(view.getRightText(), new File("answer2.xml"), new File("out2.owl"));
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "В ходе анализа произошла ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
         }
-        text = view.getRightText();
+    }
+
+    void textAnalyze(String text, File input, File out) throws Exception {
         if (!text.equals("")) {
-            File f = new File("answer2.xml");
-            Parser.run(text, f);
+            if (!Parser.run(text, input)) {
+                throw new AnalyzeException();
+            }
+            OntologyCreator ontologyCreator = new OntologyCreator();
+            OWLOntology owlOntology = ontologyCreator.run(input);
+            IRI destination = IRI.create(out.toURI());
+            owlOntology.getOWLOntologyManager().saveOntology(owlOntology, new OWLXMLDocumentFormat(), destination);
+
         }
     }
 

@@ -12,59 +12,35 @@
     <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
     <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
     <Declaration>
-        <Class IRI="#МАМА"/>
+        <Class IRI="#МАЛЬЧИК"/>
     </Declaration>
     <Declaration>
         <Class IRI="#ДОКУМЕНТ"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ПАПА"/>
+        <Class IRI="#ДЕВОЧКА"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#РАМА"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#ВОДА"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="#ПИТЬ"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="#МЫТЬ"/>
+        <ObjectProperty IRI="#ЛЮБИТЬ"/>
     </Declaration>
     <EquivalentClasses>
         <Class IRI="#ДОКУМЕНТ"/>
-        <ObjectIntersectionOf>
-            <ObjectSomeValuesFrom>
-                <ObjectProperty IRI="#МЫТЬ"/>
-                <Class IRI="#МАМА"/>
-            </ObjectSomeValuesFrom>
-            <ObjectSomeValuesFrom>
-                <ObjectProperty IRI="#ПИТЬ"/>
-                <Class IRI="#ПАПА"/>
-            </ObjectSomeValuesFrom>
-        </ObjectIntersectionOf>
-    </EquivalentClasses>
-    <EquivalentClasses>
-        <Class IRI="#МАМА"/>
         <ObjectSomeValuesFrom>
-            <ObjectProperty IRI="#МЫТЬ"/>
-            <Class IRI="#РАМА"/>
+            <ObjectProperty IRI="#ЛЮБИТЬ"/>
+            <Class IRI="#МАЛЬЧИК"/>
         </ObjectSomeValuesFrom>
     </EquivalentClasses>
     <EquivalentClasses>
-        <Class IRI="#ПАПА"/>
+        <Class IRI="#МАЛЬЧИК"/>
         <ObjectSomeValuesFrom>
-            <ObjectProperty IRI="#ПИТЬ"/>
-            <Class IRI="#ВОДА"/>
+            <ObjectProperty IRI="#ЛЮБИТЬ"/>
+            <Class IRI="#ДЕВОЧКА"/>
         </ObjectSomeValuesFrom>
     </EquivalentClasses>
     <DisjointClasses>
-        <Class IRI="#ВОДА"/>
+        <Class IRI="#ДЕВОЧКА"/>
         <Class IRI="#ДОКУМЕНТ"/>
-        <Class IRI="#МАМА"/>
-        <Class IRI="#ПАПА"/>
-        <Class IRI="#РАМА"/>
+        <Class IRI="#МАЛЬЧИК"/>
     </DisjointClasses>
 </Ontology>
 
