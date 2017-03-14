@@ -12,35 +12,48 @@
     <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
     <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
     <Declaration>
-        <Class IRI="#МАЛЬЧИК"/>
+        <Class IRI="#МАМА"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#КРАСИВЫЙ"/>
     </Declaration>
     <Declaration>
         <Class IRI="#ДОКУМЕНТ"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ДЕВОЧКА"/>
+        <Class IRI="#ВАЗА"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#ЛЮБИТЬ"/>
+        <ObjectProperty IRI="#КУПИТЬ"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#БЫТЬ"/>
     </Declaration>
     <EquivalentClasses>
         <Class IRI="#ДОКУМЕНТ"/>
         <ObjectSomeValuesFrom>
-            <ObjectProperty IRI="#ЛЮБИТЬ"/>
-            <Class IRI="#МАЛЬЧИК"/>
+            <ObjectProperty IRI="#КУПИТЬ"/>
+            <Class IRI="#МАМА"/>
         </ObjectSomeValuesFrom>
     </EquivalentClasses>
     <EquivalentClasses>
-        <Class IRI="#МАЛЬЧИК"/>
-        <ObjectSomeValuesFrom>
-            <ObjectProperty IRI="#ЛЮБИТЬ"/>
-            <Class IRI="#ДЕВОЧКА"/>
-        </ObjectSomeValuesFrom>
+        <Class IRI="#МАМА"/>
+        <ObjectIntersectionOf>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="#БЫТЬ"/>
+                <Class IRI="#КРАСИВЫЙ"/>
+            </ObjectSomeValuesFrom>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="#КУПИТЬ"/>
+                <Class IRI="#ВАЗА"/>
+            </ObjectSomeValuesFrom>
+        </ObjectIntersectionOf>
     </EquivalentClasses>
     <DisjointClasses>
-        <Class IRI="#ДЕВОЧКА"/>
+        <Class IRI="#ВАЗА"/>
         <Class IRI="#ДОКУМЕНТ"/>
-        <Class IRI="#МАЛЬЧИК"/>
+        <Class IRI="#КРАСИВЫЙ"/>
+        <Class IRI="#МАМА"/>
     </DisjointClasses>
 </Ontology>
 

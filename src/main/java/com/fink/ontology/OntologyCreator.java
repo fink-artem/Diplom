@@ -121,6 +121,13 @@ public class OntologyCreator {
 
                     addEquivalent(owlObjectProperty, owlClass);
                     break;
+                case PRIL_CYSCH:
+                    System.out.println(rel.lemma_child);
+                    owlClass = addClass(rel.lemma_child);
+                    owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + "БЫТЬ"));
+
+                    addEquivalent(owlObjectProperty, owlClass);
+                    break;
             }
         }
     }

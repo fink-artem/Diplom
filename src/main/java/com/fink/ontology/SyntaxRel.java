@@ -30,7 +30,7 @@ public enum SyntaxRel {
                 return SRAVN_STEPEN;
             case "НАРЕЧ-ГЛАГОЛ":
                 return NARECH_GLAGOL;
-            case "ПРИЛ-СУЩ":
+            case "ПРИЛ_СУЩ":
                 return PRIL_CYSCH;
             case "НАР-ЧИСЛ-СУЩ":
                 return NAR_CHISL_CYSCH;

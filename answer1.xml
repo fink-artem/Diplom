@@ -2,11 +2,13 @@
 <input>temp.txt</input>
 <sent>
 	<synvar>
-		<clause type="√Ћ_Ћ»„Ќ">мальчик любит девочку</clause>
-		<group type="ѕ–яћ_ƒќѕ">любит девочку</group>
+		<clause type="√Ћ_Ћ»„Ќ">ћама купила красивую вазу</clause>
+		<group type="ѕ–»Ћ_—”ў">красивую вазу</group>
+		<group type="ѕ–яћ_ƒќѕ">купила красивую вазу</group>
 	</synvar>
-	<rel name="ѕ–яћ_ƒќѕ" gramrel="дст,пе,нс,3л,нст,ед," lemmprnt="ЋёЅ»“№" grmprnt="дст,пе,нс,3л,нст,ед," lemmchld="ƒ≈¬ќ„ ј" grmchld="од,жр,вн,ед," > любит -> девочку </rel>
-	<rel name="ѕќƒЋ" gramrel="" lemmprnt="ЋёЅ»“№" grmprnt="дст,пе,нс,3л,нст,ед," lemmchld="ћјЋ№„» " grmchld="од,мр,им,ед," > любит -> мальчик </rel>
+	<rel name="ѕ–»Ћ_—”ў" gramrel="жр,вн,ед," lemmprnt="¬ј«ј" grmprnt="но,жр,вн,ед," lemmchld=" –ј—»¬џ…" grmchld="кач,но,од,жр,вн,ед," > вазу -> красивую </rel>
+	<rel name="ѕ–яћ_ƒќѕ" gramrel="дст,пе,св,прш,жр,ед," lemmprnt=" ”ѕ»“№" grmprnt="дст,пе,св,прш,жр,ед," lemmchld="¬ј«ј" grmchld="но,жр,вн,ед," > купила -> вазу </rel>
+	<rel name="ѕќƒЋ" gramrel="" lemmprnt=" ”ѕ»“№" grmprnt="дст,пе,св,прш,жр,ед," lemmchld="ћјћј" grmchld="од,жр,им,ед," > купила -> ћама </rel>
 </sent>
 </chunk>
 
