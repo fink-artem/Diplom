@@ -101,7 +101,7 @@ public class OntologyCreator {
                     scas = rel.lemma_parent;
                     owlClass = addClass(rel.lemma_child);
                     podlOwlClass = owlClass;
-                    owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + rel.lemma_parent)); 
+                    owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + rel.lemma_parent));
 
                     addEquivalentDocument(owlObjectProperty, owlClass);
                     break;
@@ -121,7 +121,18 @@ public class OntologyCreator {
                     owlClass = addClass(rel.lemma_child);
                     owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + "БЫТЬ"));
 
-                    addEquivalent(owlObjectProperty, addClass(rel.lemma_parent), owlClass);
+                    addEquivalent(owlObjectProperty, factory.getOWLClass(IRI.create(NS + rel.lemma_parent)), owlClass);
+                    break;
+                case GENIT_IG:
+                    owlClass = addClass(rel.lemma_child);
+                    owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + "ИМЕТЬ"));
+
+                    addEquivalent(owlObjectProperty, owlClass, factory.getOWLClass(IRI.create(NS + rel.lemma_parent)));
+                    break;
+                case GLAG_INF:
+                    scas = rel.grammar_parent + "_" + rel.lemma_child;
+                    factory.getOWLObjectProperty(IRI.create(NS + scas));
+
                     break;
             }
         }
