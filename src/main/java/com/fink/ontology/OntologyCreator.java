@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -55,7 +57,6 @@ public class OntologyCreator {
     private OWLOntology owlOntology;
     private OWLClass mainOwlClass;
     private OWLClass podlOwlClass;
-    private OWLClassExpression podlClassExpression;
     private OWLClassExpression mainClassExpression;
 
     public OWLOntology run(File f) throws ParserConfigurationException, SAXException, IOException, OWLOntologyCreationException {
@@ -72,7 +73,6 @@ public class OntologyCreator {
             Node nodeSecondLevel = nodeSecondLevelList.item(i);
             if (nodeSecondLevel.getNodeType() != Node.TEXT_NODE && nodeSecondLevel.getNodeName().equals(SENTENCE)) {
                 parseSent(nodeSecondLevel);
-                saveEquivalent();
             }
         }
         saveEquivalentDocument();
@@ -98,51 +98,53 @@ public class OntologyCreator {
             Rel rel = resList.get(i);
             switch (SyntaxRel.convert(rel.name)) {
                 case PODL:
-                    saveEquivalent();
                     scas = rel.lemma_parent;
                     owlClass = addClass(rel.lemma_child);
                     podlOwlClass = owlClass;
-                    owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + rel.lemma_parent));
-                    //OWLFunctionalObjectPropertyAxiom owlfdpa = factory.getOWLFunctionalObjectPropertyAxiom(owlObjectProperty);
-                    //manager.applyChange(new AddAxiom(owlOntology, owlObjectProperty));                    
+                    owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + rel.lemma_parent)); 
 
                     addEquivalentDocument(owlObjectProperty, owlClass);
                     break;
                 case PG:
                     owlClass = addClass(rel.lemma_child);
-
                     owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + scas + "_" + rel.lemma_parent));
 
-                    addEquivalent(owlObjectProperty, owlClass);
+                    addEquivalent(owlObjectProperty, podlOwlClass, owlClass);
                     break;
                 case PRYAM_DOP:
                     owlClass = addClass(rel.lemma_child);
                     owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + rel.lemma_parent));
 
-                    addEquivalent(owlObjectProperty, owlClass);
+                    addEquivalent(owlObjectProperty, podlOwlClass, owlClass);
                     break;
                 case PRIL_CYSCH:
-                    System.out.println(rel.lemma_child);
                     owlClass = addClass(rel.lemma_child);
                     owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + "БЫТЬ"));
 
-                    addEquivalent(owlObjectProperty, owlClass);
+                    addEquivalent(owlObjectProperty, addClass(rel.lemma_parent), owlClass);
                     break;
             }
         }
     }
 
-    void addEquivalent(OWLObjectProperty owlObjectProperty, OWLClass owlClass) {
+    void addEquivalent(OWLObjectProperty owlObjectProperty, OWLClass owlClassDomain, OWLClass owlClassRange) {
         if (owlObjectProperty == null) {
             return;
         }
-        OWLClassExpression newExpression = factory.getOWLObjectSomeValuesFrom(owlObjectProperty, owlClass);
-        if (podlClassExpression == null) {
-            podlClassExpression = newExpression;
+        Set<OWLEquivalentClassesAxiom> equivalentClassesAxioms = owlOntology.getEquivalentClassesAxioms(owlClassDomain);
+        OWLClassExpression newExpression = factory.getOWLObjectSomeValuesFrom(owlObjectProperty, owlClassRange);
+        if (equivalentClassesAxioms.isEmpty()) {
+            OWLEquivalentClassesAxiom owlEquivalentClassesAxiom = factory.getOWLEquivalentClassesAxiom(owlClassDomain, newExpression);
+            manager.addAxiom(owlOntology, owlEquivalentClassesAxiom);
         } else {
-            podlClassExpression = factory.getOWLObjectIntersectionOf(podlClassExpression, newExpression);
+            OWLEquivalentClassesAxiom next = equivalentClassesAxioms.iterator().next();
+            Iterator<OWLClassExpression> iterator = next.getClassExpressions().iterator();
+            iterator.next();
+            OWLClassExpression oldExpression = iterator.next();
+            manager.removeAxiom(owlOntology, next);
+            OWLEquivalentClassesAxiom owlEquivalentClassesAxiom = factory.getOWLEquivalentClassesAxiom(owlClassDomain, factory.getOWLObjectIntersectionOf(oldExpression, newExpression));
+            manager.addAxiom(owlOntology, owlEquivalentClassesAxiom);
         }
-
     }
 
     void addEquivalentDocument(OWLObjectProperty owlObjectProperty, OWLClass owlClass) {
@@ -161,15 +163,6 @@ public class OntologyCreator {
         OWLClass owlClass = factory.getOWLClass(IRI.create(NS + name));
         manager.addAxiom(owlOntology, factory.getOWLDeclarationAxiom(owlClass));
         return owlClass;
-    }
-
-    void saveEquivalent() {
-        if (podlClassExpression == null) {
-            return;
-        }
-        OWLEquivalentClassesAxiom owlEquivalentClassesAxiom = factory.getOWLEquivalentClassesAxiom(podlOwlClass, podlClassExpression);
-        manager.addAxiom(owlOntology, owlEquivalentClassesAxiom);
-        podlClassExpression = null;
     }
 
     void saveEquivalentDocument() {
