@@ -4,7 +4,7 @@ public enum SyntaxRel {
 
     KOLICH, CYCH_CHISL, FIO, NAR_PRIL, ODNOR_PRIL, ODNOR_NAR, ODNOR_INF, DATE,
     CLOSCH_PG, SRAVN_STEPEN, NARECH_GLAGOL, PRIL_CYSCH, NAR_CHISL_CYSCH,
-    CHISL_CYSCH, GENIT_IG, PG, ODNOR_IG, OTR_FORMA, PRYAM_DOP, EL_ADRES, GLAG_INF, PODL, UNDEFINED;
+    CHISL_CYSCH, GENIT_IG, PG, ODNOR_IG, OTR_FORMA, PRYAM_DOP, EL_ADRES, PER_GLAG_INF, PODL, UNDEFINED;
 
     public static SyntaxRel convert(String text) {
         switch (text) {
@@ -48,8 +48,8 @@ public enum SyntaxRel {
                 return PRYAM_DOP;
             case "ЭЛ_АДРЕС":
                 return EL_ADRES;
-            case "ГЛАГ_ИНФ":
-                return GLAG_INF;
+            case "ПЕР_ГЛАГ_ИНФ":
+                return PER_GLAG_INF;
             case "ПОДЛ":
                 return PODL;
             default:

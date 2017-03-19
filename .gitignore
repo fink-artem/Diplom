@@ -14,3 +14,4 @@ hs_err_pid*
 /build
 /target/
 /catalog-v001.xml
+/frames/catalog-v001.xml

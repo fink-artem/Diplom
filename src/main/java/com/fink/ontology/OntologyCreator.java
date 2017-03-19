@@ -14,14 +14,19 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -39,13 +44,13 @@ public class OntologyCreator {
     private static final String LEMMA_CHILD = "lemmchld";
     private static final String LEMMA_PARENT = "lemmprnt";
     private static final String ENCODING = "WINDOWS-1251";
-    private static final String BASE = "http://www.semanticweb.org/admin/ontologies";
-    private static final String NS = BASE + "#";
     private static final String DOCUMENT_NAME = "ДОКУМЕНТ";
+
+    private String ns;
 
     class Rel {
 
-        String name;
+        SyntaxRel name;
         String grammar_child;
         String grammar_parent;
         String lemma_child;
@@ -54,6 +59,7 @@ public class OntologyCreator {
 
     private OWLDataFactory factory;
     private final OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+    private final OWLReasonerFactory reasonerFactory = new StructuralReasonerFactory();
     private OWLOntology owlOntology;
     private OWLClass mainOwlClass;
     private OWLClass podlOwlClass;
@@ -61,8 +67,12 @@ public class OntologyCreator {
 
     public OWLOntology run(File f) throws ParserConfigurationException, SAXException, IOException, OWLOntologyCreationException {
         factory = manager.getOWLDataFactory();
-        owlOntology = manager.createOntology(IRI.create(BASE));
-        mainOwlClass = addClass(DOCUMENT_NAME);
+        owlOntology = manager.loadOntologyFromOntologyDocument(new File("./frames/main.owl"));
+        OWLReasoner owlReasoner = reasonerFactory.createReasoner(owlOntology);
+        owlReasoner.precomputeInferences();
+        System.out.println(owlReasoner.isConsistent());
+        ns = owlOntology.getOntologyID().getOntologyIRI().get() + "#";
+        mainOwlClass = getClass(DOCUMENT_NAME);
         DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         InputSource inputStore = new InputSource(new FileInputStream(f));
         inputStore.setEncoding(ENCODING);
@@ -87,63 +97,73 @@ public class OntologyCreator {
         for (int k = 0; k < nodeList.getLength(); k++) {
             Node node = nodeList.item(k);
             if (node.getNodeType() != Node.TEXT_NODE && node.getNodeName().equals(RELATION)) {
-                resList.add(parseRel(node.getAttributes()));
+                Rel rel = parseRel(node.getAttributes());
+                if(rel.name==SyntaxRel.OTR_FORMA){
+                    
+                    continue;
+                }
+                resList.add(rel);
             }
         }
         String scas = "";
         int size = resList.size();
         OWLObjectProperty owlObjectProperty;
+        OWLIndividual owlIndividual;
         OWLClass owlClass;
         for (int i = size - 1; i >= 0; i--) {
             Rel rel = resList.get(i);
-            switch (SyntaxRel.convert(rel.name)) {
+            switch (rel.name) {
                 case PODL:
-                    scas = rel.lemma_parent;
-                    owlClass = addClass(rel.lemma_child);
-                    podlOwlClass = owlClass;
-                    owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + rel.lemma_parent));
+                    scas = handlePostfix(rel.lemma_parent);
+                    podlOwlClass = getClass(rel.lemma_child);
+                    owlIndividual = getIndividual(rel.lemma_child);
+                    owlObjectProperty = getObjectProperty(scas);
 
-                    addEquivalentDocument(owlObjectProperty, owlClass);
+                    addEquivalentDocument(owlObjectProperty, owlIndividual);
                     break;
                 case PG:
-                    owlClass = addClass(rel.lemma_child);
-                    owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + scas + "_" + rel.lemma_parent));
+                    owlIndividual = getIndividual(rel.lemma_child);
+                    owlObjectProperty = getObjectProperty(scas + "_" + rel.lemma_parent);
 
-                    addEquivalent(owlObjectProperty, podlOwlClass, owlClass);
+                    addEquivalent(owlObjectProperty, podlOwlClass, owlIndividual);
                     break;
                 case PRYAM_DOP:
-                    owlClass = addClass(rel.lemma_child);
-                    owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + rel.lemma_parent));
+                    owlIndividual = getIndividual(rel.lemma_child);
+                    owlObjectProperty = getObjectProperty(handlePostfix(rel.lemma_parent));
 
-                    addEquivalent(owlObjectProperty, podlOwlClass, owlClass);
+                    addEquivalent(owlObjectProperty, podlOwlClass, owlIndividual);
                     break;
                 case PRIL_CYSCH:
-                    owlClass = addClass(rel.lemma_child);
-                    owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + "БЫТЬ"));
+                    owlClass = getClass(rel.lemma_parent);
+                    owlIndividual = getIndividual(rel.lemma_child);
+                    owlObjectProperty = getObjectProperty("БЫТЬ");
 
-                    addEquivalent(owlObjectProperty, factory.getOWLClass(IRI.create(NS + rel.lemma_parent)), owlClass);
+                    addEquivalent(owlObjectProperty, owlClass, owlIndividual);
                     break;
                 case GENIT_IG:
-                    owlClass = addClass(rel.lemma_child);
-                    owlObjectProperty = factory.getOWLObjectProperty(IRI.create(NS + "ИМЕТЬ"));
+                    owlClass = getClass(rel.lemma_parent);
+                    owlIndividual = getIndividual(rel.lemma_child);
+                    owlObjectProperty = getObjectProperty("ИМЕТЬ");
 
-                    addEquivalent(owlObjectProperty, owlClass, factory.getOWLClass(IRI.create(NS + rel.lemma_parent)));
+                    addEquivalent(owlObjectProperty, owlClass, owlIndividual);
                     break;
-                case GLAG_INF:
-                    scas = rel.grammar_parent + "_" + rel.lemma_child;
-                    factory.getOWLObjectProperty(IRI.create(NS + scas));
+                case PER_GLAG_INF:
+                    scas = handlePostfix(rel.grammar_parent) + "_" + handlePostfix(rel.lemma_child);
+                    getObjectProperty(scas);
 
+                    break;
+                case OTR_FORMA:
                     break;
             }
         }
     }
 
-    void addEquivalent(OWLObjectProperty owlObjectProperty, OWLClass owlClassDomain, OWLClass owlClassRange) {
+    void addEquivalent(OWLObjectProperty owlObjectProperty, OWLClass owlClassDomain, OWLIndividual owlIndividual) {
         if (owlObjectProperty == null) {
             return;
         }
         Set<OWLEquivalentClassesAxiom> equivalentClassesAxioms = owlOntology.getEquivalentClassesAxioms(owlClassDomain);
-        OWLClassExpression newExpression = factory.getOWLObjectSomeValuesFrom(owlObjectProperty, owlClassRange);
+        OWLClassExpression newExpression = factory.getOWLObjectHasValue(owlObjectProperty, owlIndividual);
         if (equivalentClassesAxioms.isEmpty()) {
             OWLEquivalentClassesAxiom owlEquivalentClassesAxiom = factory.getOWLEquivalentClassesAxiom(owlClassDomain, newExpression);
             manager.addAxiom(owlOntology, owlEquivalentClassesAxiom);
@@ -158,11 +178,11 @@ public class OntologyCreator {
         }
     }
 
-    void addEquivalentDocument(OWLObjectProperty owlObjectProperty, OWLClass owlClass) {
+    void addEquivalentDocument(OWLObjectProperty owlObjectProperty, OWLIndividual owlIndividual) {
         if (owlObjectProperty == null) {
             return;
         }
-        OWLClassExpression newExpression = factory.getOWLObjectSomeValuesFrom(owlObjectProperty, owlClass);
+        OWLClassExpression newExpression = factory.getOWLObjectHasValue(owlObjectProperty, owlIndividual);
         if (mainClassExpression == null) {
             mainClassExpression = newExpression;
         } else {
@@ -170,10 +190,27 @@ public class OntologyCreator {
         }
     }
 
-    OWLClass addClass(String name) {
-        OWLClass owlClass = factory.getOWLClass(IRI.create(NS + name));
-        manager.addAxiom(owlOntology, factory.getOWLDeclarationAxiom(owlClass));
-        return owlClass;
+    String handlePostfix(String word) {
+        if (word.endsWith("СЯ")) {
+            return word.substring(0, word.length() - 2);
+        }
+        return word;
+    }
+
+    OWLClass getClass(String name) {
+        return factory.getOWLClass(IRI.create(ns + name));
+    }
+
+    OWLIndividual getIndividual(String name) {
+        OWLIndividual owlIndividual = factory.getOWLNamedIndividual(IRI.create(ns + name));
+        OWLClass owlClass = factory.getOWLClass(IRI.create(ns + name));
+        OWLClassAssertionAxiom owlClassAssertionAxiom = factory.getOWLClassAssertionAxiom(owlClass, owlIndividual);
+        manager.addAxiom(owlOntology, owlClassAssertionAxiom);
+        return owlIndividual;
+    }
+
+    OWLObjectProperty getObjectProperty(String name) {
+        return factory.getOWLObjectProperty(IRI.create(ns + name));
     }
 
     void saveEquivalentDocument() {
@@ -187,7 +224,7 @@ public class OntologyCreator {
 
     Rel parseRel(NamedNodeMap namedNodeMap) {
         Rel rel = new Rel();
-        rel.name = namedNodeMap.getNamedItem(NAME).getNodeValue();
+        rel.name = SyntaxRel.convert(namedNodeMap.getNamedItem(NAME).getNodeValue());
         rel.grammar_child = namedNodeMap.getNamedItem(GRAMMAR_CHILD).getNodeValue();
         rel.grammar_parent = namedNodeMap.getNamedItem(GRAMMAR_PARENT).getNodeValue();
         rel.lemma_child = namedNodeMap.getNamedItem(LEMMA_CHILD).getNodeValue();

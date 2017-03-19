@@ -1,8 +1,6 @@
 package com.fink.view;
 
 import com.fink.ontology.OntologyCreator;
-import com.fink.parser.AnalyzeException;
-import com.fink.parser.Parser;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -100,9 +98,9 @@ public class InitMainWindow extends MainFrame {
 
     void textAnalyze(String text, File input, File out) throws Exception {
         if (!text.equals("")) {
-            if (!Parser.run(text, input)) {
+            /*if (!Parser.run(text, input)) {
                 throw new AnalyzeException();
-            }
+            }*/
             OntologyCreator ontologyCreator = new OntologyCreator();
             OWLOntology owlOntology = ontologyCreator.run(input);
             IRI destination = IRI.create(out.toURI());
