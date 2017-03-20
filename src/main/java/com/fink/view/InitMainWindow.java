@@ -1,6 +1,7 @@
 package com.fink.view;
 
 import com.fink.ontology.OntologyCreator;
+import com.fink.ontology.Reasoner;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -11,9 +12,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.formats.OWLXMLDocumentFormat;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import ru.nsu.cg.MainFrame;
 
 public class InitMainWindow extends MainFrame {
@@ -103,6 +106,10 @@ public class InitMainWindow extends MainFrame {
             }*/
             OntologyCreator ontologyCreator = new OntologyCreator();
             OWLOntology owlOntology = ontologyCreator.run(input);
+            Reasoner reasoner = new Reasoner();
+            //reasoner.run(owlOntology);
+            OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+            reasoner.run(manager.loadOntologyFromOntologyDocument(new File("./frames/main.owl")));
             IRI destination = IRI.create(out.toURI());
             owlOntology.getOWLOntologyManager().saveOntology(owlOntology, new OWLXMLDocumentFormat(), destination);
 

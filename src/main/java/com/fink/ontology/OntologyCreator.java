@@ -24,9 +24,7 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
-import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -59,18 +57,16 @@ public class OntologyCreator {
 
     private OWLDataFactory factory;
     private final OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-    private final OWLReasonerFactory reasonerFactory = new StructuralReasonerFactory();
+    private static final File FRAME = new File("./frames/main.owl");
+
     private OWLOntology owlOntology;
     private OWLClass mainOwlClass;
     private OWLClass podlOwlClass;
     private OWLClassExpression mainClassExpression;
 
-    public OWLOntology run(File f) throws ParserConfigurationException, SAXException, IOException, OWLOntologyCreationException {
+    public OWLOntology run(File f) throws ParserConfigurationException, SAXException, IOException, OWLOntologyCreationException, OWLOntologyStorageException {
         factory = manager.getOWLDataFactory();
-        owlOntology = manager.loadOntologyFromOntologyDocument(new File("./frames/main.owl"));
-        OWLReasoner owlReasoner = reasonerFactory.createReasoner(owlOntology);
-        owlReasoner.precomputeInferences();
-        System.out.println(owlReasoner.isConsistent());
+        owlOntology = manager.loadOntologyFromOntologyDocument(FRAME);
         ns = owlOntology.getOntologyID().getOntologyIRI().get() + "#";
         mainOwlClass = getClass(DOCUMENT_NAME);
         DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -98,8 +94,8 @@ public class OntologyCreator {
             Node node = nodeList.item(k);
             if (node.getNodeType() != Node.TEXT_NODE && node.getNodeName().equals(RELATION)) {
                 Rel rel = parseRel(node.getAttributes());
-                if(rel.name==SyntaxRel.OTR_FORMA){
-                    
+                if (rel.name == SyntaxRel.OTR_FORMA) {
+
                     continue;
                 }
                 resList.add(rel);
