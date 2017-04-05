@@ -27,6 +27,7 @@ public class InitMainWindow extends MainFrame {
     private final int MIN_HEIGHT = 600;
     private static final int BUFFER_SIZE = 1024;
     private View view = new View();
+    private boolean isRunning = false;
 
     public InitMainWindow() throws Exception {
         super();
@@ -85,25 +86,32 @@ public class InitMainWindow extends MainFrame {
         view.addText(text);
     }
 
-    public void onRun() {
-        if (view.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Документы не найдены", "Ошибка", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        try {
-            textAnalyze(view.getLeftText(), new File("answer1.xml"), new File("out.owl"));
-            textAnalyze(view.getRightText(), new File("answer2.xml"), new File("out2.owl"));
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "В ходе анализа произошла ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
+    synchronized public void onRun() {
+        if (!isRunning) {
+            isRunning = true;
+            Thread t = new Thread(() -> {
+                if (view.isEmpty()) {
+                    JOptionPane.showMessageDialog(InitMainWindow.this, "Документы не найдены", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                try {
+                    textAnalyze(view.getLeftText(), new File("answer1.xml"), new File("out.owl"));
+                    textAnalyze(view.getRightText(), new File("answer2.xml"), new File("out2.owl"));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(InitMainWindow.this, "В ходе анализа произошла ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
+                isRunning = false;
+            });
+            t.start();
         }
     }
 
     void textAnalyze(String text, File input, File out) throws Exception {
         if (!text.equals("")) {
             /*if (!Parser.run(text, input)) {
-                throw new AnalyzeException();
-            }*/
+             throw new AnalyzeException();
+             }*/
             OntologyCreator ontologyCreator = new OntologyCreator();
             OWLOntology owlOntology = ontologyCreator.run(input);
             Reasoner reasoner = new Reasoner();

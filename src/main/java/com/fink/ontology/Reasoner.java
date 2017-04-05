@@ -1,12 +1,15 @@
 package com.fink.ontology;
 
-import com.clarkparsia.owlapi.explanation.BlackBoxExplanation;
-import com.clarkparsia.owlapi.explanation.HSTExplanationGenerator;
 import java.util.Set;
 import org.semanticweb.HermiT.Configuration;
 import org.semanticweb.HermiT.ReasonerFactory;
+import org.semanticweb.owl.explanation.api.Explanation;
+import org.semanticweb.owl.explanation.api.ExplanationGenerator;
+import org.semanticweb.owl.explanation.api.ExplanationGeneratorFactory;
+import org.semanticweb.owl.explanation.api.ExplanationManager;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
@@ -15,8 +18,10 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 public class Reasoner {
 
     private final OWLReasonerFactory reasonerFactory = new ReasonerFactory();
+    private OWLDataFactory factory;
 
     public void run(OWLOntology owlOntology) {
+        factory = owlOntology.getOWLOntologyManager().getOWLDataFactory();
         Configuration configuration = new Configuration();
         configuration.throwInconsistentOntologyException = false;
         OWLReasoner owlReasoner = reasonerFactory.createReasoner(owlOntology, configuration);
@@ -24,28 +29,23 @@ public class Reasoner {
         Set<OWLClass> unsatisfiable = bottomNode.getEntitiesMinusBottom();
         OWLClass owlClass = null;
         if (!unsatisfiable.isEmpty()) {
-            System.out.println("The following classes are unsatisfiable: ");
             for (OWLClass cls : unsatisfiable) {
                 System.out.println(" " + cls);
                 owlClass = cls;
             }
-        } else {
-            System.out.println("There are no unsatisfiable classes");
+        } 
+        
+        ExplanationGeneratorFactory<OWLAxiom> genFac = ExplanationManager.createLaconicExplanationGeneratorFactory(reasonerFactory);
+
+        ExplanationGenerator<OWLAxiom> gen = genFac.createExplanationGenerator(owlOntology);
+
+        OWLAxiom entailment = factory.getOWLEquivalentClassesAxiom(owlClass, factory.getOWLNothing());
+        
+        Set<Explanation<OWLAxiom>> expl = gen.getExplanations(entailment);
+        for (Explanation<OWLAxiom> expl1 : expl) {
+            System.out.println(expl1);
         }
-        BlackBoxExplanation exp = new BlackBoxExplanation(owlOntology, reasonerFactory, owlReasoner);
-        HSTExplanationGenerator multExplanator = new HSTExplanationGenerator(exp);
-        // Now we can get explanations for the unsatisfiability. 
-        Set<Set<OWLAxiom>> explanations = multExplanator.getExplanations(owlClass);
-        // Let us print them. Each explanation is one possible set of axioms that cause the 
-        // unsatisfiability. 
-        for (Set<OWLAxiom> explanation : explanations) {
-            System.out.println("------------------");
-            System.out.println("Axioms causing the unsatisfiability: ");
-            for (OWLAxiom causingAxiom : explanation) {
-                System.out.println(causingAxiom);
-            }
-            System.out.println("------------------");
-        }
+
     }
 
 }
