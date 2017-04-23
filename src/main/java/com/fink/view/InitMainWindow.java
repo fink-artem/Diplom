@@ -2,6 +2,8 @@ package com.fink.view;
 
 import com.fink.ontology.OntologyCreator;
 import com.fink.ontology.Reasoner;
+import com.fink.parser.AnalyzeException;
+import com.fink.parser.Parser;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -109,15 +111,15 @@ public class InitMainWindow extends MainFrame {
 
     void textAnalyze(String text, File input, File out) throws Exception {
         if (!text.equals("")) {
-            /*if (!Parser.run(text, input)) {
-             throw new AnalyzeException();
-             }*/
+            if (!Parser.run(text, input)) {
+                throw new AnalyzeException();
+            }
             OntologyCreator ontologyCreator = new OntologyCreator();
             OWLOntology owlOntology = ontologyCreator.run(input);
-            Reasoner reasoner = new Reasoner();
-            //reasoner.run(owlOntology);
-            OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-            reasoner.run(manager.loadOntologyFromOntologyDocument(new File("./frames/main.owl")));
+            /*Reasoner reasoner = new Reasoner();
+             reasoner.run(owlOntology);
+             OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+             reasoner.run(manager.loadOntologyFromOntologyDocument(new File("./frames/main.owl")));*/
             IRI destination = IRI.create(out.toURI());
             owlOntology.getOWLOntologyManager().saveOntology(owlOntology, new OWLXMLDocumentFormat(), destination);
 

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -103,6 +104,8 @@ public class OntologyCreator {
         }
         String scas = "";
         int size = resList.size();
+        preprocessing(resList);
+        printRel(resList);
         OWLObjectProperty owlObjectProperty;
         OWLIndividual owlIndividual;
         OWLClass owlClass;
@@ -110,7 +113,7 @@ public class OntologyCreator {
             Rel rel = resList.get(i);
             switch (rel.name) {
                 case PODL:
-                    scas = handlePostfix(rel.lemma_parent);
+                    scas = handlePostfix(rel.lemma_parent).toUpperCase();
                     podlOwlClass = getClass(rel.lemma_child);
                     owlIndividual = getIndividual(rel.lemma_child);
                     owlObjectProperty = getObjectProperty(scas);
@@ -119,7 +122,7 @@ public class OntologyCreator {
                     break;
                 case PG:
                     owlIndividual = getIndividual(rel.lemma_child);
-                    owlObjectProperty = getObjectProperty(scas + "_" + rel.lemma_parent);
+                    owlObjectProperty = getObjectProperty(scas + "_" + rel.lemma_parent.toUpperCase());
 
                     addEquivalent(owlObjectProperty, podlOwlClass, owlIndividual);
                     break;
@@ -130,6 +133,7 @@ public class OntologyCreator {
                     addEquivalent(owlObjectProperty, podlOwlClass, owlIndividual);
                     break;
                 case PRIL_CYSCH:
+                case SRAVN_STEPEN:
                     owlClass = getClass(rel.lemma_parent);
                     owlIndividual = getIndividual(rel.lemma_child);
                     owlObjectProperty = getObjectProperty("БЫТЬ");
@@ -137,19 +141,16 @@ public class OntologyCreator {
                     addEquivalent(owlObjectProperty, owlClass, owlIndividual);
                     break;
                 case GENIT_IG:
-                    owlClass = getClass(rel.lemma_parent);
-                    owlIndividual = getIndividual(rel.lemma_child);
-                    owlObjectProperty = getObjectProperty("ИМЕТЬ");
+                    podlOwlClass = getClass(rel.lemma_parent + "_" + rel.lemma_child);
 
-                    addEquivalent(owlObjectProperty, owlClass, owlIndividual);
+                    addSubClass(getClass(rel.lemma_parent), podlOwlClass);
                     break;
                 case PER_GLAG_INF:
                     scas = handlePostfix(rel.grammar_parent) + "_" + handlePostfix(rel.lemma_child);
                     getObjectProperty(scas);
 
                     break;
-                case OTR_FORMA:
-                    break;
+
             }
         }
     }
@@ -184,6 +185,10 @@ public class OntologyCreator {
         } else {
             mainClassExpression = factory.getOWLObjectIntersectionOf(mainClassExpression, newExpression);
         }
+    }
+
+    void addSubClass(OWLClass owlClass, OWLClass owlSubClass) {
+        manager.applyChange(new AddAxiom(owlOntology, factory.getOWLSubClassOfAxiom(owlSubClass, owlClass)));
     }
 
     String handlePostfix(String word) {
@@ -226,6 +231,33 @@ public class OntologyCreator {
         rel.lemma_child = namedNodeMap.getNamedItem(LEMMA_CHILD).getNodeValue();
         rel.lemma_parent = namedNodeMap.getNamedItem(LEMMA_PARENT).getNodeValue();
         return rel;
+    }
+
+    void preprocessing(List<Rel> resList) {
+        int size = resList.size();
+        for (int i = 1; i < size; i++) {
+            Rel rel = resList.get(i - 1);
+            if (rel.name == SyntaxRel.GENIT_IG && !rel.lemma_parent.equals(resList.get(i).lemma_child)) {
+                resList.set(i - 1, resList.get(i));
+                resList.set(i, rel);
+            }
+        }
+        for (int i = 0; i < size; i++) {
+            if (resList.get(i).name == SyntaxRel.OTR_FORMA) {
+                String replace = "НЕ_" + resList.get(i).lemma_parent;
+                for (int j = i + 1; j < size; j++) {
+                    if (resList.get(j).lemma_child.equals(resList.get(i).lemma_parent)) {
+                        resList.get(j).lemma_child = replace;
+                    }
+                }
+            }
+        }
+    }
+
+    void printRel(List<Rel> resList) {
+        resList.stream().forEach((rel) -> {
+            System.out.println(rel.name + " " + rel.lemma_parent + " " + rel.lemma_child);
+        });
     }
 
 }
