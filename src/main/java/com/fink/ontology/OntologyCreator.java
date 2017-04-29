@@ -1,15 +1,13 @@
 package com.fink.ontology;
 
+import com.fink.logic.Rel;
+import com.fink.logic.SyntaxRel;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
@@ -26,35 +24,13 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class OntologyCreator {
-
-    private static final String SENTENCE = "sent";
-    private static final String RELATION = "rel";
-    private static final String NAME = "name";
-    private static final String GRAMMAR_CHILD = "grmchld";
-    private static final String GRAMMAR_PARENT = "grmprnt";
-    private static final String LEMMA_CHILD = "lemmchld";
-    private static final String LEMMA_PARENT = "lemmprnt";
-    private static final String ENCODING = "WINDOWS-1251";
+    
     private static final String DOCUMENT_NAME = "ДОКУМЕНТ";
 
     private String ns;
-
-    class Rel {
-
-        SyntaxRel name;
-        String grammar_child;
-        String grammar_parent;
-        String lemma_child;
-        String lemma_parent;
-    }
 
     private OWLDataFactory factory;
     private final OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -65,22 +41,13 @@ public class OntologyCreator {
     private OWLClass podlOwlClass;
     private OWLClassExpression mainClassExpression;
 
-    public OWLOntology run(File f) throws ParserConfigurationException, SAXException, IOException, OWLOntologyCreationException, OWLOntologyStorageException {
+    public OWLOntology run(List<List<Rel>> textSynan) throws ParserConfigurationException, SAXException, IOException, OWLOntologyCreationException, OWLOntologyStorageException {
         factory = manager.getOWLDataFactory();
         owlOntology = manager.loadOntologyFromOntologyDocument(FRAME);
         ns = owlOntology.getOntologyID().getOntologyIRI().get() + "#";
         mainOwlClass = getClass(DOCUMENT_NAME);
-        DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        InputSource inputStore = new InputSource(new FileInputStream(f));
-        inputStore.setEncoding(ENCODING);
-        Document document = documentBuilder.parse(inputStore);
-        Node root = document.getDocumentElement();
-        NodeList nodeSecondLevelList = root.getChildNodes();
-        for (int i = 0; i < nodeSecondLevelList.getLength(); i++) {
-            Node nodeSecondLevel = nodeSecondLevelList.item(i);
-            if (nodeSecondLevel.getNodeType() != Node.TEXT_NODE && nodeSecondLevel.getNodeName().equals(SENTENCE)) {
-                parseSent(nodeSecondLevel);
-            }
+        for (List<Rel> textSynan1 : textSynan) {
+            parseSent(textSynan1);
         }
         saveEquivalentDocument();
         OWLDisjointClassesAxiom owlDisjointClassesAxiom = factory.getOWLDisjointClassesAxiom(owlOntology.getClassesInSignature());
@@ -88,74 +55,75 @@ public class OntologyCreator {
         return owlOntology;
     }
 
-    private void parseSent(Node Sent) {
-        NodeList nodeList = Sent.getChildNodes();
-        List<Rel> resList = new ArrayList<>();
-        for (int k = 0; k < nodeList.getLength(); k++) {
-            Node node = nodeList.item(k);
-            if (node.getNodeType() != Node.TEXT_NODE && node.getNodeName().equals(RELATION)) {
-                Rel rel = parseRel(node.getAttributes());
-                if (rel.name == SyntaxRel.OTR_FORMA) {
-
-                    continue;
-                }
-                resList.add(rel);
-            }
-        }
+    private void parseSent(List<Rel> resList) {
         String scas = "";
-        int size = resList.size();
+        String sysh = "";
         preprocessing(resList);
         printRel(resList);
         OWLObjectProperty owlObjectProperty;
         OWLIndividual owlIndividual;
         OWLClass owlClass;
+        List<Rel> unresolvedRel = new ArrayList<>();
+        int size = resList.size();
         for (int i = size - 1; i >= 0; i--) {
             Rel rel = resList.get(i);
             switch (rel.name) {
                 case PODL:
-                    scas = handlePostfix(rel.lemma_parent).toUpperCase();
+                    scas = handlePostfix(rel.lemma_parent);
+                    sysh = rel.lemma_child;
                     podlOwlClass = getClass(rel.lemma_child);
-                    owlIndividual = getIndividual(rel.lemma_child);
-                    owlObjectProperty = getObjectProperty(scas);
+                    //owlIndividual = getIndividual(rel.lemma_child);
+                    //owlObjectProperty = getObjectProperty(scas);
 
-                    addEquivalentDocument(owlObjectProperty, owlIndividual);
+                    //addEquivalentDocument(owlObjectProperty, owlIndividual);
                     break;
                 case PG:
                     owlIndividual = getIndividual(rel.lemma_child);
-                    owlObjectProperty = getObjectProperty(scas + "_" + rel.lemma_parent.toUpperCase());
+                    owlObjectProperty = getObjectProperty(scas + "_" + rel.lemma_parent);
 
-                    addEquivalent(owlObjectProperty, podlOwlClass, owlIndividual);
+                    if (podlOwlClass == null) {
+                        unresolvedRel.add(rel);
+                        break;
+                    }
+                    addEquivalent(podlOwlClass, owlObjectProperty, owlIndividual);
                     break;
                 case PRYAM_DOP:
                     owlIndividual = getIndividual(rel.lemma_child);
                     owlObjectProperty = getObjectProperty(handlePostfix(rel.lemma_parent));
-
-                    addEquivalent(owlObjectProperty, podlOwlClass, owlIndividual);
-                    break;
-                case PRIL_CYSCH:
-                case SRAVN_STEPEN:
-                    owlClass = getClass(rel.lemma_parent);
-                    owlIndividual = getIndividual(rel.lemma_child);
-                    owlObjectProperty = getObjectProperty("БЫТЬ");
-
-                    addEquivalent(owlObjectProperty, owlClass, owlIndividual);
+                    if (podlOwlClass == null) {
+                        unresolvedRel.add(rel);
+                        break;
+                    }
+                    addEquivalent(podlOwlClass, owlObjectProperty, owlIndividual);
                     break;
                 case GENIT_IG:
-                    podlOwlClass = getClass(rel.lemma_parent + "_" + rel.lemma_child);
-
-                    addSubClass(getClass(rel.lemma_parent), podlOwlClass);
+                    owlClass = getClass(rel.lemma_parent + "_" + rel.lemma_child);
+                    if (rel.lemma_parent.equals(sysh)) {
+                        podlOwlClass = owlClass;
+                    }
+                    addSubClass(getClass(rel.lemma_parent), owlClass);
                     break;
-                case PER_GLAG_INF:
-                    scas = handlePostfix(rel.grammar_parent) + "_" + handlePostfix(rel.lemma_child);
-                    getObjectProperty(scas);
-
+                case OTSRAV:
+                    owlObjectProperty = getObjectProperty(rel.lemma_parent);
+                    owlIndividual = getIndividual(rel.lemma_child);
+                    if (podlOwlClass == null) {
+                        unresolvedRel.add(rel);
+                        break;
+                    }
+                    addEquivalent(podlOwlClass, owlObjectProperty, owlIndividual);
                     break;
-
+            }
+        }
+        if (podlOwlClass != null) {
+            for (Rel rel : unresolvedRel) {
+                owlObjectProperty = getObjectProperty(rel.lemma_parent);
+                owlIndividual = getIndividual(rel.lemma_child);
+                addEquivalent(podlOwlClass, owlObjectProperty, owlIndividual);
             }
         }
     }
 
-    void addEquivalent(OWLObjectProperty owlObjectProperty, OWLClass owlClassDomain, OWLIndividual owlIndividual) {
+    void addEquivalent(OWLClass owlClassDomain, OWLObjectProperty owlObjectProperty, OWLIndividual owlIndividual) {
         if (owlObjectProperty == null) {
             return;
         }
@@ -167,10 +135,28 @@ public class OntologyCreator {
         } else {
             OWLEquivalentClassesAxiom next = equivalentClassesAxioms.iterator().next();
             Iterator<OWLClassExpression> iterator = next.getClassExpressions().iterator();
+            OWLClassExpression oldExpression = iterator.next();
+            if (oldExpression.equals(owlClassDomain)) {
+                oldExpression = iterator.next();
+            }
+            manager.removeAxiom(owlOntology, next);
+            OWLEquivalentClassesAxiom owlEquivalentClassesAxiom = factory.getOWLEquivalentClassesAxiom(owlClassDomain, factory.getOWLObjectIntersectionOf(oldExpression, newExpression));
+            manager.addAxiom(owlOntology, owlEquivalentClassesAxiom);
+        }
+    }
+
+    void addClassEquivalent(OWLClass owlClassDomain, OWLClass owlClassRange) {
+        Set<OWLEquivalentClassesAxiom> equivalentClassesAxioms = owlOntology.getEquivalentClassesAxioms(owlClassDomain);
+        if (equivalentClassesAxioms.isEmpty()) {
+            OWLEquivalentClassesAxiom owlEquivalentClassesAxiom = factory.getOWLEquivalentClassesAxiom(owlClassDomain, owlClassRange);
+            manager.addAxiom(owlOntology, owlEquivalentClassesAxiom);
+        } else {
+            OWLEquivalentClassesAxiom next = equivalentClassesAxioms.iterator().next();
+            Iterator<OWLClassExpression> iterator = next.getClassExpressions().iterator();
             iterator.next();
             OWLClassExpression oldExpression = iterator.next();
             manager.removeAxiom(owlOntology, next);
-            OWLEquivalentClassesAxiom owlEquivalentClassesAxiom = factory.getOWLEquivalentClassesAxiom(owlClassDomain, factory.getOWLObjectIntersectionOf(oldExpression, newExpression));
+            OWLEquivalentClassesAxiom owlEquivalentClassesAxiom = factory.getOWLEquivalentClassesAxiom(owlClassDomain, factory.getOWLObjectIntersectionOf(oldExpression, owlClassRange));
             manager.addAxiom(owlOntology, owlEquivalentClassesAxiom);
         }
     }
@@ -189,6 +175,18 @@ public class OntologyCreator {
 
     void addSubClass(OWLClass owlClass, OWLClass owlSubClass) {
         manager.applyChange(new AddAxiom(owlOntology, factory.getOWLSubClassOfAxiom(owlSubClass, owlClass)));
+    }
+
+    void copyEquivalent(OWLClass owlClass1, OWLClass owlClass2) {
+        Set<OWLEquivalentClassesAxiom> equivalentClassesAxioms = owlOntology.getEquivalentClassesAxioms(owlClass1);
+        if (!equivalentClassesAxioms.isEmpty()) {
+            OWLEquivalentClassesAxiom next = equivalentClassesAxioms.iterator().next();
+            Iterator<OWLClassExpression> iterator = next.getClassExpressions().iterator();
+            iterator.next();
+            OWLClassExpression oldExpression = iterator.next();
+            OWLEquivalentClassesAxiom owlEquivalentClassesAxiom = factory.getOWLEquivalentClassesAxiom(owlClass2, oldExpression);
+            manager.addAxiom(owlOntology, owlEquivalentClassesAxiom);
+        }
     }
 
     String handlePostfix(String word) {
@@ -223,25 +221,51 @@ public class OntologyCreator {
         mainClassExpression = null;
     }
 
-    Rel parseRel(NamedNodeMap namedNodeMap) {
-        Rel rel = new Rel();
-        rel.name = SyntaxRel.convert(namedNodeMap.getNamedItem(NAME).getNodeValue());
-        rel.grammar_child = namedNodeMap.getNamedItem(GRAMMAR_CHILD).getNodeValue();
-        rel.grammar_parent = namedNodeMap.getNamedItem(GRAMMAR_PARENT).getNodeValue();
-        rel.lemma_child = namedNodeMap.getNamedItem(LEMMA_CHILD).getNodeValue();
-        rel.lemma_parent = namedNodeMap.getNamedItem(LEMMA_PARENT).getNodeValue();
-        return rel;
-    }
+    
 
     void preprocessing(List<Rel> resList) {
+        processingGlag(resList);
+        processingOdnorod(resList);
+        processingPril(resList);
+        processingGenit(resList);
+    }
+
+    void processingGenit(List<Rel> resList) {
         int size = resList.size();
-        for (int i = 1; i < size; i++) {
-            Rel rel = resList.get(i - 1);
-            if (rel.name == SyntaxRel.GENIT_IG && !rel.lemma_parent.equals(resList.get(i).lemma_child)) {
-                resList.set(i - 1, resList.get(i));
-                resList.set(i, rel);
+        for (int i = 0; i < size; i++) {
+            if (resList.get(i).name == SyntaxRel.GENIT_IG) {
+                String replace = resList.get(i).lemma_parent + resList.get(i).lemma_child;
+                for (int j = i + 1; j < size; j++) {
+                    if (resList.get(j).lemma_child.equals(resList.get(i).lemma_parent) || resList.get(j).lemma_child.equals(resList.get(i).lemma_child)) {
+                        resList.get(j).lemma_child = replace;
+                    }
+                    if (resList.get(j).lemma_parent.equals(resList.get(i).lemma_parent) || resList.get(j).lemma_parent.equals(resList.get(i).lemma_child)) {
+                        resList.get(j).lemma_parent = replace;
+                    }
+                    if (resList.get(j).name == SyntaxRel.PODL) {
+                        break;
+                    }
+                }
+                for (int j = i - 1; j >= 0; j--) {
+                    if (resList.get(j).lemma_child.equals(resList.get(i).lemma_parent) || resList.get(j).lemma_child.equals(resList.get(i).lemma_child)) {
+                        resList.get(j).lemma_child = replace;
+                    }
+                    if (resList.get(j).lemma_parent.equals(resList.get(i).lemma_parent) || resList.get(j).lemma_parent.equals(resList.get(i).lemma_child)) {
+                        resList.get(j).lemma_parent = replace;
+                    }
+                    if (resList.get(j).name == SyntaxRel.PODL) {
+                        break;
+                    }
+                }
+                resList.remove(i);
+                i--;
+                size--;
             }
         }
+    }
+
+    void processingGlag(List<Rel> resList) {
+        int size = resList.size();
         for (int i = 0; i < size; i++) {
             if (resList.get(i).name == SyntaxRel.OTR_FORMA) {
                 String replace = "НЕ_" + resList.get(i).lemma_parent;
@@ -249,7 +273,122 @@ public class OntologyCreator {
                     if (resList.get(j).lemma_child.equals(resList.get(i).lemma_parent)) {
                         resList.get(j).lemma_child = replace;
                     }
+                    if (resList.get(j).name == SyntaxRel.PODL) {
+                        break;
+                    }
                 }
+                for (int j = i - 1; j >= 0; j--) {
+                    if (resList.get(j).lemma_child.equals(resList.get(i).lemma_parent)) {
+                        resList.get(j).lemma_child = replace;
+                    }
+                    if (resList.get(j).name == SyntaxRel.PODL) {
+                        break;
+                    }
+                }
+                resList.remove(i);
+                i--;
+                size--;
+            }
+            if (resList.get(i).name == SyntaxRel.PER_GLAG_INF) {
+                String replace = handlePostfix(resList.get(i).grammar_parent) + "_" + handlePostfix(resList.get(i).lemma_child);
+                for (int j = i + 1; j < size; j++) {
+                    if (resList.get(j).lemma_child.equals(resList.get(i).lemma_parent) || resList.get(j).lemma_child.equals(resList.get(i).lemma_child)) {
+                        resList.get(j).lemma_child = replace;
+                    }
+                    if (resList.get(j).lemma_parent.equals(resList.get(i).lemma_parent) || resList.get(j).lemma_parent.equals(resList.get(i).lemma_child)) {
+                        resList.get(j).lemma_parent = replace;
+                    }
+                    if (resList.get(j).name == SyntaxRel.PODL) {
+                        break;
+                    }
+                }
+                for (int j = i - 1; j >= 0; j--) {
+                    if (resList.get(j).lemma_child.equals(resList.get(i).lemma_parent) || resList.get(j).lemma_child.equals(resList.get(i).lemma_child)) {
+                        resList.get(j).lemma_child = replace;
+                    }
+                    if (resList.get(j).lemma_parent.equals(resList.get(i).lemma_parent) || resList.get(j).lemma_parent.equals(resList.get(i).lemma_child)) {
+                        resList.get(j).lemma_parent = replace;
+                    }
+                    if (resList.get(j).name == SyntaxRel.PODL) {
+                        break;
+                    }
+                }
+                resList.remove(i);
+                i--;
+                size--;
+            }
+        }
+    }
+
+    void processingOdnorod(List<Rel> resList) {
+        int size = resList.size();
+        for (int i = 0; i < size; i++) {
+            if (resList.get(i).lemma_child.equals("ИЛИ") || resList.get(i).lemma_child.equals("И") || resList.get(i).lemma_child.equals(",")) {
+                for (int j = i + 1; j < size; j++) {
+                    if (resList.get(j).lemma_parent.equals(resList.get(i).lemma_child)) {
+                        resList.get(j).lemma_parent = resList.get(i).lemma_parent;
+                    }
+                    if (resList.get(j).name == SyntaxRel.PODL) {
+                        break;
+                    }
+                }
+                for (int j = i - 1; j >= 0; j--) {
+                    if (resList.get(j).lemma_parent.equals(resList.get(i).lemma_child)) {
+                        resList.get(j).lemma_parent = resList.get(i).lemma_parent;
+                    }
+                    if (resList.get(j).name == SyntaxRel.PODL) {
+                        break;
+                    }
+                }
+                resList.remove(i);
+                i--;
+                size--;
+            }
+        }
+    }
+
+    void processingPril(List<Rel> resList) {
+        int size = resList.size();
+        for (int i = 0; i < size; i++) {
+            if (resList.get(i).name == SyntaxRel.PRIL_CYSCH) {
+                Rel rel = resList.get(i);
+                String replace = rel.lemma_child + "_" + rel.lemma_parent;
+                OWLClass owlClass = getClass(replace);
+                int search = rel.lemma_parent.lastIndexOf("_");
+                OWLIndividual owlIndividual = getIndividual(rel.lemma_child);
+                OWLObjectProperty owlObjectProperty = getObjectProperty("БЫТЬ");
+                if (search == -1) {
+                    addClassEquivalent(owlClass, getClass(rel.lemma_parent));
+                } else {
+                    copyEquivalent(getClass(rel.lemma_parent), owlClass);
+                }
+
+                addEquivalent(owlClass, owlObjectProperty, owlIndividual);
+                for (int j = i + 1; j < size; j++) {
+                    if (resList.get(j).lemma_parent.equals(resList.get(i).lemma_parent)) {
+                        resList.get(j).lemma_parent = replace;
+                    }
+                    if (resList.get(j).lemma_child.equals(resList.get(i).lemma_parent)) {
+                        resList.get(j).lemma_child = replace;
+                    }
+                    if (resList.get(j).name == SyntaxRel.PODL) {
+                        break;
+                    }
+                }
+                for (int j = i - 1; j >= 0; j--) {
+                    if (resList.get(j).lemma_parent.equals(resList.get(i).lemma_parent)) {
+                        resList.get(j).lemma_parent = replace;
+                    }
+                    if (resList.get(j).lemma_child.equals(resList.get(i).lemma_parent)) {
+                        resList.get(j).lemma_child = replace;
+                    }
+                    if (resList.get(j).name == SyntaxRel.PODL) {
+                        break;
+                    }
+                }
+                resList.remove(i);
+                i--;
+                size--;
             }
         }
     }

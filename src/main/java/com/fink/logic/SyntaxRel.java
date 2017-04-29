@@ -1,11 +1,19 @@
-package com.fink.ontology;
+package com.fink.logic;
 
 public enum SyntaxRel {
 
-    KOLICH, CYCH_CHISL, FIO, NAR_PRIL, ODNOR_PRIL, ODNOR_NAR, ODNOR_INF, DATE,
+    KOLICH, CYCH_CHISL, FIO, NAR_PRIL, ODNOR_PRIL, ODNOR_NAR, ODNOR_INF, OTSRAV, DATE,
     CLOSCH_PG, SRAVN_STEPEN, NARECH_GLAGOL, PRIL_CYSCH, NAR_CHISL_CYSCH,
-    CHISL_CYSCH, GENIT_IG, PG, ODNOR_IG, OTR_FORMA, PRYAM_DOP, EL_ADRES, PER_GLAG_INF, PODL, UNDEFINED;
+    CHISL_CYSCH, GENIT_IG, PG, ODNOR_IG, OTR_FORMA, PRYAM_DOP, EL_ADRES, PER_GLAG_INF, PODL(0), UNDEFINED;
 
+    SyntaxRel(int raiting){
+        this.raiting = raiting;
+    }
+    
+    SyntaxRel(){
+        raiting = Integer.MAX_VALUE;
+    }
+    
     public static SyntaxRel convert(String text) {
         switch (text) {
             case "КОЛИЧ":
@@ -22,6 +30,8 @@ public enum SyntaxRel {
                 return ODNOR_NAR;
             case "ОДНОР_ИНФ":
                 return ODNOR_INF;
+            case "ОТСРАВН":
+                return OTSRAV;
             case "ДАТА":
                 return DATE;
             case "СЛОЖ_ПГ":
@@ -56,4 +66,6 @@ public enum SyntaxRel {
                 return UNDEFINED;
         }
     }
+
+    int raiting;
 }

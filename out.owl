@@ -12,16 +12,16 @@
     <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
     <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
     <Declaration>
-        <Class IRI="#СПАТЬ"/>
+        <ObjectProperty IRI="#НАРУШАТЬ"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#НАРУШАТЬ"/>
+        <ObjectProperty IRI="#СОБЛЮСТИ"/>
     </Declaration>
     <Declaration>
         <ObjectProperty IRI="#НЕ_РАЗРЕШИТЬ"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#СОБЛЮСТИ"/>
+        <ObjectProperty IRI="#СОСТАВЛЯТЬ"/>
     </Declaration>
     <Declaration>
         <ObjectProperty IRI="#СОБЛЮДАТЬ"/>
@@ -33,25 +33,40 @@
         <ObjectProperty IRI="#НЕ_ЗАПРЕТИТЬ"/>
     </Declaration>
     <Declaration>
+        <ObjectProperty IRI="#РАЗРУШАТЬ"/>
+    </Declaration>
+    <Declaration>
         <ObjectProperty IRI="#ЗАПРЕТИТЬ"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#НЕ_НАРУШАТЬ"/>
+        <ObjectProperty IRI="#СОЗДАВАТЬ"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#СОДЕРЖАТЬ"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#СОСТОЯТЬ_ИЗ"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#РАЗРУШИТЬ"/>
     </Declaration>
     <Declaration>
         <ObjectProperty IRI="#НАРУШИТЬ"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#НЕ_СОБЛЮСТИ"/>
+        <ObjectProperty IRI="#НЕ_НАРУШАТЬ"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="#СПАТЬ"/>
+        <ObjectProperty IRI="#НЕ_СОБЛЮСТИ"/>
     </Declaration>
     <Declaration>
         <ObjectProperty IRI="#РАЗРЕШИТЬ"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ДОКУМЕНТ"/>
+        <ObjectProperty IRI="#СОЗДАТЬ"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#СОДЕРЖАТЬСЯ_В"/>
     </Declaration>
     <Declaration>
         <ObjectProperty IRI="#РАЗРЕШАТЬ"/>
@@ -79,6 +94,9 @@
     </Declaration>
     <Declaration>
         <Class IRI="#КРАСИВЫЙ"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#ДОРОГОЙ_ВАЗА"/>
     </Declaration>
     <Declaration>
         <ObjectProperty IRI="#КУПИТЬ"/>
@@ -90,13 +108,13 @@
         <NamedIndividual IRI="#ДОРОГОЙ"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="#МАМА"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#ВАЗА"/>
+        <Class IRI="#КРАСИВЫЙ_НОВЫЙ_ЛУЧШИЙ_ДОРОГОЙ_ВАЗА"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#НОВЫЙ"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#НОВЫЙ_ЛУЧШИЙ_ДОРОГОЙ_ВАЗА"/>
     </Declaration>
     <Declaration>
         <Class IRI="#ДОРОГОЙ"/>
@@ -105,23 +123,87 @@
         <Class IRI="#МАМА"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="#КРАСИВЫЙ_НОВЫЙ_ЛУЧШИЙ_ДОРОГОЙ_ВАЗА"/>
+    </Declaration>
+    <Declaration>
         <Class IRI="#ВАЗА"/>
     </Declaration>
     <Declaration>
         <Class IRI="#НОВЫЙ"/>
     </Declaration>
+    <Declaration>
+        <Class IRI="#ЛУЧШИЙ_ДОРОГОЙ_ВАЗА"/>
+    </Declaration>
     <EquivalentClasses>
-        <Class IRI="#ВАЗА"/>
+        <Class IRI="#ДОРОГОЙ_ВАЗА"/>
+        <ObjectIntersectionOf>
+            <Class IRI="#ВАЗА"/>
+            <ObjectHasValue>
+                <ObjectProperty IRI="#БЫТЬ"/>
+                <NamedIndividual IRI="#ДОРОГОЙ"/>
+            </ObjectHasValue>
+        </ObjectIntersectionOf>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="#КРАСИВЫЙ_НОВЫЙ_ЛУЧШИЙ_ДОРОГОЙ_ВАЗА"/>
         <ObjectIntersectionOf>
             <ObjectIntersectionOf>
                 <ObjectIntersectionOf>
+                    <ObjectIntersectionOf>
+                        <Class IRI="#ВАЗА"/>
+                        <ObjectHasValue>
+                            <ObjectProperty IRI="#БЫТЬ"/>
+                            <NamedIndividual IRI="#ДОРОГОЙ"/>
+                        </ObjectHasValue>
+                    </ObjectIntersectionOf>
                     <ObjectHasValue>
                         <ObjectProperty IRI="#БЫТЬ"/>
-                        <NamedIndividual IRI="#КРАСИВЫЙ"/>
+                        <NamedIndividual IRI="#ЛУЧШИЙ"/>
                     </ObjectHasValue>
+                </ObjectIntersectionOf>
+                <ObjectHasValue>
+                    <ObjectProperty IRI="#БЫТЬ"/>
+                    <NamedIndividual IRI="#НОВЫЙ"/>
+                </ObjectHasValue>
+            </ObjectIntersectionOf>
+            <ObjectHasValue>
+                <ObjectProperty IRI="#БЫТЬ"/>
+                <NamedIndividual IRI="#КРАСИВЫЙ"/>
+            </ObjectHasValue>
+        </ObjectIntersectionOf>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="#ЛУЧШИЙ_ДОРОГОЙ_ВАЗА"/>
+        <ObjectIntersectionOf>
+            <ObjectIntersectionOf>
+                <Class IRI="#ВАЗА"/>
+                <ObjectHasValue>
+                    <ObjectProperty IRI="#БЫТЬ"/>
+                    <NamedIndividual IRI="#ДОРОГОЙ"/>
+                </ObjectHasValue>
+            </ObjectIntersectionOf>
+            <ObjectHasValue>
+                <ObjectProperty IRI="#БЫТЬ"/>
+                <NamedIndividual IRI="#ЛУЧШИЙ"/>
+            </ObjectHasValue>
+        </ObjectIntersectionOf>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="#МАМА"/>
+        <ObjectHasValue>
+            <ObjectProperty IRI="#КУПИТЬ"/>
+            <NamedIndividual IRI="#КРАСИВЫЙ_НОВЫЙ_ЛУЧШИЙ_ДОРОГОЙ_ВАЗА"/>
+        </ObjectHasValue>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="#НОВЫЙ_ЛУЧШИЙ_ДОРОГОЙ_ВАЗА"/>
+        <ObjectIntersectionOf>
+            <ObjectIntersectionOf>
+                <ObjectIntersectionOf>
+                    <Class IRI="#ВАЗА"/>
                     <ObjectHasValue>
                         <ObjectProperty IRI="#БЫТЬ"/>
-                        <NamedIndividual IRI="#НОВЫЙ"/>
+                        <NamedIndividual IRI="#ДОРОГОЙ"/>
                     </ObjectHasValue>
                 </ObjectIntersectionOf>
                 <ObjectHasValue>
@@ -131,52 +213,22 @@
             </ObjectIntersectionOf>
             <ObjectHasValue>
                 <ObjectProperty IRI="#БЫТЬ"/>
-                <NamedIndividual IRI="#ДОРОГОЙ"/>
+                <NamedIndividual IRI="#НОВЫЙ"/>
             </ObjectHasValue>
         </ObjectIntersectionOf>
     </EquivalentClasses>
-    <EquivalentClasses>
-        <Class IRI="#ДОКУМЕНТ"/>
-        <ObjectHasValue>
-            <ObjectProperty IRI="#ЗАПРЕЩАТЬ"/>
-            <NamedIndividual IRI="#СПАТЬ"/>
-        </ObjectHasValue>
-    </EquivalentClasses>
-    <EquivalentClasses>
-        <Class IRI="#ДОКУМЕНТ"/>
-        <ObjectHasValue>
-            <ObjectProperty IRI="#КУПИТЬ"/>
-            <NamedIndividual IRI="#МАМА"/>
-        </ObjectHasValue>
-    </EquivalentClasses>
-    <EquivalentClasses>
-        <Class IRI="#ДОКУМЕНТ"/>
-        <ObjectHasValue>
-            <ObjectProperty IRI="#РАЗРЕШАТЬ"/>
-            <NamedIndividual IRI="#СПАТЬ"/>
-        </ObjectHasValue>
-    </EquivalentClasses>
-    <EquivalentClasses>
-        <Class IRI="#МАМА"/>
-        <ObjectHasValue>
-            <ObjectProperty IRI="#КУПИТЬ"/>
-            <NamedIndividual IRI="#ВАЗА"/>
-        </ObjectHasValue>
-    </EquivalentClasses>
     <DisjointClasses>
         <Class IRI="#ВАЗА"/>
-        <Class IRI="#ДОКУМЕНТ"/>
         <Class IRI="#ДОРОГОЙ"/>
+        <Class IRI="#ДОРОГОЙ_ВАЗА"/>
         <Class IRI="#КРАСИВЫЙ"/>
+        <Class IRI="#КРАСИВЫЙ_НОВЫЙ_ЛУЧШИЙ_ДОРОГОЙ_ВАЗА"/>
         <Class IRI="#ЛУЧШИЙ"/>
+        <Class IRI="#ЛУЧШИЙ_ДОРОГОЙ_ВАЗА"/>
         <Class IRI="#МАМА"/>
         <Class IRI="#НОВЫЙ"/>
-        <Class IRI="#СПАТЬ"/>
+        <Class IRI="#НОВЫЙ_ЛУЧШИЙ_ДОРОГОЙ_ВАЗА"/>
     </DisjointClasses>
-    <ClassAssertion>
-        <Class IRI="#ВАЗА"/>
-        <NamedIndividual IRI="#ВАЗА"/>
-    </ClassAssertion>
     <ClassAssertion>
         <Class IRI="#ДОРОГОЙ"/>
         <NamedIndividual IRI="#ДОРОГОЙ"/>
@@ -186,21 +238,25 @@
         <NamedIndividual IRI="#КРАСИВЫЙ"/>
     </ClassAssertion>
     <ClassAssertion>
-        <Class IRI="#ЛУЧШИЙ"/>
-        <NamedIndividual IRI="#ЛУЧШИЙ"/>
+        <Class IRI="#КРАСИВЫЙ_НОВЫЙ_ЛУЧШИЙ_ДОРОГОЙ_ВАЗА"/>
+        <NamedIndividual IRI="#КРАСИВЫЙ_НОВЫЙ_ЛУЧШИЙ_ДОРОГОЙ_ВАЗА"/>
     </ClassAssertion>
     <ClassAssertion>
-        <Class IRI="#МАМА"/>
-        <NamedIndividual IRI="#МАМА"/>
+        <Class IRI="#ЛУЧШИЙ"/>
+        <NamedIndividual IRI="#ЛУЧШИЙ"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="#НОВЫЙ"/>
         <NamedIndividual IRI="#НОВЫЙ"/>
     </ClassAssertion>
-    <ClassAssertion>
-        <Class IRI="#СПАТЬ"/>
-        <NamedIndividual IRI="#СПАТЬ"/>
-    </ClassAssertion>
+    <EquivalentObjectProperties>
+        <ObjectProperty IRI="#СОДЕРЖАТЬ"/>
+        <ObjectProperty IRI="#СОСТОЯТЬ_ИЗ"/>
+    </EquivalentObjectProperties>
+    <EquivalentObjectProperties>
+        <ObjectProperty IRI="#СОДЕРЖАТЬСЯ_В"/>
+        <ObjectProperty IRI="#СОСТАВЛЯТЬ"/>
+    </EquivalentObjectProperties>
     <SubObjectPropertyOf>
         <ObjectProperty IRI="#ЗАПРЕТИТЬ"/>
         <ObjectProperty IRI="#ЗАПРЕЩАТЬ"/>
@@ -246,9 +302,37 @@
         <ObjectProperty IRI="#РАЗРЕШАТЬ"/>
     </SubObjectPropertyOf>
     <SubObjectPropertyOf>
+        <ObjectProperty IRI="#РАЗРУШИТЬ"/>
+        <ObjectProperty IRI="#РАЗРУШАТЬ"/>
+    </SubObjectPropertyOf>
+    <SubObjectPropertyOf>
         <ObjectProperty IRI="#СОБЛЮСТИ"/>
         <ObjectProperty IRI="#СОБЛЮДАТЬ"/>
     </SubObjectPropertyOf>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#СОЗДАТЬ"/>
+        <ObjectProperty IRI="#СОЗДАВАТЬ"/>
+    </SubObjectPropertyOf>
+    <InverseObjectProperties>
+        <ObjectProperty IRI="#СОДЕРЖАТЬ"/>
+        <ObjectProperty IRI="#СОДЕРЖАТЬСЯ_В"/>
+    </InverseObjectProperties>
+    <InverseObjectProperties>
+        <ObjectProperty IRI="#СОСТАВЛЯТЬ"/>
+        <ObjectProperty IRI="#СОСТОЯТЬ_ИЗ"/>
+    </InverseObjectProperties>
+    <TransitiveObjectProperty>
+        <ObjectProperty IRI="#СОДЕРЖАТЬ"/>
+    </TransitiveObjectProperty>
+    <TransitiveObjectProperty>
+        <ObjectProperty IRI="#СОДЕРЖАТЬСЯ_В"/>
+    </TransitiveObjectProperty>
+    <TransitiveObjectProperty>
+        <ObjectProperty IRI="#СОСТАВЛЯТЬ"/>
+    </TransitiveObjectProperty>
+    <TransitiveObjectProperty>
+        <ObjectProperty IRI="#СОСТОЯТЬ_ИЗ"/>
+    </TransitiveObjectProperty>
     <DisjointObjectProperties>
         <ObjectProperty IRI="#ЗАПРЕЩАТЬ"/>
         <ObjectProperty IRI="#РАЗРЕШАТЬ"/>
@@ -256,6 +340,10 @@
     <DisjointObjectProperties>
         <ObjectProperty IRI="#НАРУШАТЬ"/>
         <ObjectProperty IRI="#СОБЛЮДАТЬ"/>
+    </DisjointObjectProperties>
+    <DisjointObjectProperties>
+        <ObjectProperty IRI="#РАЗРУШАТЬ"/>
+        <ObjectProperty IRI="#СОЗДАВАТЬ"/>
     </DisjointObjectProperties>
 </Ontology>
 

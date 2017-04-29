@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<chunk>
+<input>temp.txt</input>
+<sent>
+	<synvar>
+		<clause type="ГЛ_ЛИЧН">Мама купила красивую вазу</clause>
+		<group type="ПРИЛ_СУЩ">красивую вазу</group>
+		<group type="ПРЯМ_ДОП">купила красивую вазу</group>
+	</synvar><rel name="ПРИЛ_СУЩ" gramrel="жр,вн,ед," lemmprnt="ВАЗА" grmprnt="но,жр,вн,ед," lemmchld="ДОРОГОЙ" grmchld="кач,но,од,жр,вн,ед," > вазу -> красивую </rel>		
+	
+	<rel name="ПРИЛ_СУЩ" gramrel="жр,вн,ед," lemmprnt="ВАЗА" grmprnt="но,жр,вн,ед," lemmchld="ЛУЧШИЙ" grmchld="кач,но,од,жр,вн,ед," > вазу -> красивую </rel>		
+	<rel name="ПРИЛ_СУЩ" gramrel="жр,вн,ед," lemmprnt="ВАЗА" grmprnt="но,жр,вн,ед," lemmchld="НОВЫЙ" grmchld="кач,но,од,жр,вн,ед," > вазу -> красивую </rel>	
+	<rel name="ПРИЛ_СУЩ" gramrel="жр,вн,ед," lemmprnt="ВАЗА" grmprnt="но,жр,вн,ед," lemmchld="КРАСИВЫЙ" grmchld="кач,но,од,жр,вн,ед," > вазу -> красивую </rel>
+	<rel name="ПРЯМ_ДОП" gramrel="дст,пе,св,прш,жр,ед," lemmprnt="КУПИТЬ" grmprnt="дст,пе,св,прш,жр,ед," lemmchld="ВАЗА" grmchld="но,жр,вн,ед," > купила -> вазу </rel>
+	<rel name="ПОДЛ" gramrel="" lemmprnt="КУПИТЬ" grmprnt="дст,пе,св,прш,жр,ед," lemmchld="МАМА" grmchld="од,жр,им,ед," > купила -> Мама </rel>
+</sent>
+</chunk>
+
+

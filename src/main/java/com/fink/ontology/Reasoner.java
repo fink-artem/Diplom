@@ -42,9 +42,7 @@ public class Reasoner {
         OWLAxiom entailment = factory.getOWLEquivalentClassesAxiom(owlClass, factory.getOWLNothing());
         
         Set<Explanation<OWLAxiom>> expl = gen.getExplanations(entailment);
-        for (Explanation<OWLAxiom> expl1 : expl) {
-            System.out.println(expl1);
-        }
+        expl.stream().forEach((expl1) -> System.out.println(expl1));
 
     }
 

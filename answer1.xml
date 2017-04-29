@@ -1,18 +1,67 @@
 <chunk>
-<input>temp.txt</input>
+<input>test.txt</input>
 <sent>
 	<synvar>
-		<clause type="ГЛ_ЛИЧН">Мама купила красивую вазу</clause>
-		<group type="ПРИЛ_СУЩ">красивую вазу</group>
-		<group type="ПРЯМ_ДОП">купила красивую вазу</group>
-	</synvar><rel name="ПРИЛ_СУЩ" gramrel="жр,вн,ед," lemmprnt="ВАЗА" grmprnt="но,жр,вн,ед," lemmchld="ДОРОГОЙ" grmchld="кач,но,од,жр,вн,ед," > вазу -> красивую </rel>		
-	
-	<rel name="ПРИЛ_СУЩ" gramrel="жр,вн,ед," lemmprnt="ВАЗА" grmprnt="но,жр,вн,ед," lemmchld="ЛУЧШИЙ" grmchld="кач,но,од,жр,вн,ед," > вазу -> красивую </rel>		
-	<rel name="ПРИЛ_СУЩ" gramrel="жр,вн,ед," lemmprnt="ВАЗА" grmprnt="но,жр,вн,ед," lemmchld="НОВЫЙ" grmchld="кач,но,од,жр,вн,ед," > вазу -> красивую </rel>	
-	<rel name="ПРИЛ_СУЩ" gramrel="жр,вн,ед," lemmprnt="ВАЗА" grmprnt="но,жр,вн,ед," lemmchld="КРАСИВЫЙ" grmchld="кач,но,од,жр,вн,ед," > вазу -> красивую </rel>
-	<rel name="ПРЯМ_ДОП" gramrel="дст,пе,св,прш,жр,ед," lemmprnt="КУПИТЬ" grmprnt="дст,пе,св,прш,жр,ед," lemmchld="ВАЗА" grmchld="но,жр,вн,ед," > купила -> вазу </rel>
-	<rel name="ПОДЛ" gramrel="" lemmprnt="КУПИТЬ" grmprnt="дст,пе,св,прш,жр,ед," lemmchld="МАМА" grmchld="од,жр,им,ед," > купила -> Мама </rel>
+		<clause type="ГЛ_ЛИЧН">Пребывание посетителей в студенческих общежитиях допускается с 8 : 00 до 01 : 00 часов .</clause>
+		<group type="ГЕНИТ_ИГ">Пребывание посетителей</group>
+		<group type="ПРИЛ_СУЩ">студенческих общежитиях</group>
+		<group type="ПГ">в студенческих общежитиях</group>
+		<group type="ПГ">с 8</group>
+		<group type="ПГ">до 01</group>
+	</synvar>
+	<synvar>
+		<clause type="ГЛ_ЛИЧН">Пребывание посетителей в студенческих общежитиях допускается с 8 : 00 до 01 : 00 часов .</clause>
+		<group type="ГЕНИТ_ИГ">Пребывание посетителей</group>
+		<group type="ПРИЛ_СУЩ">студенческих общежитиях</group>
+		<group type="ПГ">в студенческих общежитиях</group>
+		<group type="ПГ">с 8</group>
+		<group type="ПГ">до 01</group>
+	</synvar>
+	<synvar>
+		<clause type="ГЛ_ЛИЧН">Пребывание посетителей в студенческих общежитиях допускается с 8 : 00 до 01 : 00 часов .</clause>
+		<group type="ГЕНИТ_ИГ">Пребывание посетителей</group>
+		<group type="ПРИЛ_СУЩ">студенческих общежитиях</group>
+		<group type="ПГ">в студенческих общежитиях</group>
+		<group type="ПГ">с 8</group>
+	</synvar>
+	<synvar>
+		<clause type="ГЛ_ЛИЧН">Пребывание посетителей в студенческих общежитиях допускается с 8 : 00 до 01 : 00 часов .</clause>
+		<group type="ГЕНИТ_ИГ">Пребывание посетителей</group>
+		<group type="ПРИЛ_СУЩ">студенческих общежитиях</group>
+		<group type="ПГ">в студенческих общежитиях</group>
+		<group type="ПГ">с 8</group>
+	</synvar>
+	<synvar>
+		<clause type="ГЛ_ЛИЧН">Пребывание посетителей в студенческих общежитиях допускается с 8 : 00 до 01 : 00 часов .</clause>
+		<group type="ГЕНИТ_ИГ">Пребывание посетителей</group>
+		<group type="ПРИЛ_СУЩ">студенческих общежитиях</group>
+		<group type="ПГ">в студенческих общежитиях</group>
+		<group type="ПГ">до 01</group>
+	</synvar>
+	<synvar>
+		<clause type="ГЛ_ЛИЧН">Пребывание посетителей в студенческих общежитиях допускается с 8 : 00 до 01 : 00 часов .</clause>
+		<group type="ГЕНИТ_ИГ">Пребывание посетителей</group>
+		<group type="ПРИЛ_СУЩ">студенческих общежитиях</group>
+		<group type="ПГ">в студенческих общежитиях</group>
+		<group type="ПГ">до 01</group>
+	</synvar>
+	<synvar>
+		<clause type="ГЛ_ЛИЧН">Пребывание посетителей в студенческих общежитиях допускается с 8 : 00 до 01 : 00 часов .</clause>
+		<group type="ГЕНИТ_ИГ">Пребывание посетителей</group>
+		<group type="ПРИЛ_СУЩ">студенческих общежитиях</group>
+		<group type="ПГ">в студенческих общежитиях</group>
+	</synvar>
+	<synvar>
+		<clause type="ГЛ_ЛИЧН">Пребывание посетителей в студенческих общежитиях допускается с 8 : 00 до 01 : 00 часов .</clause>
+		<group type="ГЕНИТ_ИГ">Пребывание посетителей</group>
+		<group type="ПРИЛ_СУЩ">студенческих общежитиях</group>
+		<group type="ПГ">в студенческих общежитиях</group>
+	</synvar>
+	<rel name="ПРИЛ_СУЩ" gramrel="пр,мн," lemmprnt="ОБЩЕЖИТИЕ" grmprnt="но,ср,пр,мн," lemmchld="СТУДЕНЧЕСКИЙ" grmchld="но,од,пр,мн," > общежитиях -> студенческих </rel>
+	<rel name="ГЕНИТ_ИГ" gramrel="но,ср,им,ед," lemmprnt="ПРЕБЫВАНИЕ" grmprnt="но,ср,им,ед," lemmchld="ПОСЕТИТЕЛЬ" grmchld="од,мр,рд,мн," > Пребывание -> посетителей </rel>
+	<rel name="ПГ" gramrel="пр," lemmprnt="В" grmprnt="" lemmchld="ОБЩЕЖИТИЕ" grmchld="но,ср,пр,мн," > в -> общежитиях </rel>
+	<rel name="ПГ" gramrel="тв,вн,рд," lemmprnt="С" grmprnt="" lemmchld="8" grmchld="тв,вн,рд," > с -> 8 </rel>
+	<rel name="ПГ" gramrel="рд," lemmprnt="ДО" grmprnt="" lemmchld="01" grmchld="ср,жр,мр,рд," > до -> 01 </rel>
+	<rel name="ПОДЛ" gramrel="" lemmprnt="ДОПУСКАТЬСЯ" grmprnt="дст,нп,нс,3л,нст,ед," lemmchld="ПРЕБЫВАНИЕ" grmchld="но,ср,им,ед," > допускается -> Пребывание </rel>
 </sent>
 </chunk>
-
-

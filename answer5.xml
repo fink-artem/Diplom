@@ -1,0 +1,37 @@
+<chunk>
+<input>temp.txt</input>
+<sent>
+	<synvar>
+		<clause type="ГЛ_ЛИЧН">При прибытии в общежитие Посетитель вызывает лицо</clause>
+		<group type="ПГ">При прибытии</group>
+		<group type="ПГ">в общежитие</group>
+		<group type="ПРЯМ_ДОП">вызывает лицо</group>
+	</synvar>
+	<synvar>
+		<clause type="ГЛ_ЛИЧН">При прибытии в общежитие Посетитель вызывает лицо</clause>
+		<group type="ПГ">При прибытии</group>
+		<group type="ПГ">в общежитие</group>
+		<group type="ПРЯМ_ДОП">вызывает лицо</group>
+	</synvar>
+	<synvar>
+		<clause type="ДПР">используя мобильную связь или других жильцов общежития .</clause>
+		<group type="ПРИЛ_СУЩ">мобильную связь</group>
+		<group type="ПРИЛ_СУЩ">других жильцов</group>
+		<group type="ГЕНИТ_ИГ">других жильцов общежития</group>
+		<group type="ОДНОР_ИГ">мобильную связь или других жильцов общежития</group>
+		<group type="ПРЯМ_ДОП">используя мобильную связь или других жильцов общежития</group>
+	</synvar>
+	<rel name="ПГ" gramrel="пр," lemmprnt="ПРИ" grmprnt="" lemmchld="ПРИБЫТИЕ" grmchld="но,ср,пр,ед," > При -> прибытии </rel>
+	<rel name="ПГ" gramrel="вн," lemmprnt="В" grmprnt="" lemmchld="ОБЩЕЖИТИЕ" grmchld="но,ср,вн,ед," > в -> общежитие </rel>
+	<rel name="ПРЯМ_ДОП" gramrel="дст,пе,нс,3л,нст,ед," lemmprnt="ВЫЗЫВАТЬ" grmprnt="дст,пе,нс,3л,нст,ед," lemmchld="ЛИЦО" grmchld="но,ср,вн,ед," > вызывает -> лицо </rel>
+	<rel name="ПОДЛ" gramrel="" lemmprnt="ВЫЗЫВАТЬ" grmprnt="дст,пе,нс,3л,нст,ед," lemmchld="ПОСЕТИТЕЛЬ" grmchld="од,мр,им,ед," > вызывает -> Посетитель </rel>
+	<rel name="ПРИЛ_СУЩ" gramrel="жр,вн,ед," lemmprnt="СВЯЗЬ" grmprnt="но,жр,вн,ед," lemmchld="МОБИЛЬНЫЙ" grmchld="кач,но,од,жр,вн,ед," > связь -> мобильную </rel>
+	<rel name="ПРИЛ_СУЩ" gramrel="вн,рд,мн," lemmprnt="ЖИЛЕЦ" grmprnt="од,мр,вн,рд,мн," lemmchld="ДРУГОЙ" grmchld="но,од,вн,рд,мн," > жильцов -> других </rel>
+	<rel name="ГЕНИТ_ИГ" gramrel="вн,рд,мн," lemmprnt="ЖИЛЕЦ" grmprnt="од,мр,вн,рд,мн," lemmchld="ОБЩЕЖИТИЕ" grmchld="но,ср,рд,ед," > жильцов -> общежития </rel>
+	<rel name="ПРЯМ_ДОП" gramrel="дст,пе,нс,св,нст," lemmprnt="ИСПОЛЬЗОВАТЬ" grmprnt="дст,пе,нс,св,нст," lemmchld="ИЛИ" grmchld="" > используя -> или </rel>
+	<rel name="ОДНОР_ИГ" gramrel="вн," lemmprnt="ИЛИ" grmprnt="" lemmchld="СВЯЗЬ" grmchld="но,жр,вн,ед," > или -> связь </rel>
+	<rel name="ОДНОР_ИГ" gramrel="вн," lemmprnt="ИЛИ" grmprnt="" lemmchld="ЖИЛЕЦ" grmchld="од,мр,вн,рд,мн," > или -> жильцов </rel>
+</sent>
+</chunk>
+
+
