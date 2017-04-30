@@ -126,12 +126,12 @@ public class InitMainWindow extends MainFrame {
         if (textSynan == null) {
             throw new AnalyzeException();
         }
-        Sent sent = SemanParser.run(TEMP_FILE);
-        if (sent == null) {
+        List<Sent> sentList = SemanParser.run(TEMP_FILE);
+        if (sentList == null) {
             throw new AnalyzeException();
         }
         OntologyCreator ontologyCreator = new OntologyCreator();
-        OWLOntology owlOntology = ontologyCreator.run(textSynan);
+        OWLOntology owlOntology = ontologyCreator.run(textSynan, sentList);
         /*Reasoner reasoner = new Reasoner();
          reasoner.run(owlOntology);
          OWLOntologyManager manager = OWLManager.createOWLOntologyManager();

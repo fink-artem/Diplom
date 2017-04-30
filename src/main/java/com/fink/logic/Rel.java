@@ -7,4 +7,6 @@ public class Rel {
     public String grammar_parent;
     public String lemma_child;
     public String lemma_parent;
+    public String start_lemma_child;
+    public String start_lemma_parent;
 }
