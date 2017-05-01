@@ -443,6 +443,7 @@ public class OntologyCreator {
             case PROPERT:
                 break;
             case BELNG:
+                owlObjectProperty = getObjectProperty("ПРИНАДЛЕЖАТЬ");
                 break;
             case CAUSE:
                 break;

@@ -31,18 +31,17 @@ public class SynanParser {
     private static final String RELATION = "rel";
 
     public static List<List<Rel>> run(String input) {
-        /*String rml = System.getenv("RML");
-         if (rml == null) {
-         return null;
-         }
-         File f = new File(TEMP_FILE2);*/
-        File f = new File("answer1.xml");
+        String rml = System.getenv("RML");
+        if (rml == null) {
+            return null;
+        }
+        File f = new File(TEMP_FILE2);
         try {
-            /*ProcessBuilder processBuilder = new ProcessBuilder(rml + "Bin/TestSynan", LANGUAGE, input);
-             processBuilder.redirectOutput(f);
-             Process process = processBuilder.start();
-             process.waitFor();
-             */
+            ProcessBuilder processBuilder = new ProcessBuilder(rml + "/Bin/TestSynan", LANGUAGE, input);
+            processBuilder.redirectOutput(f);
+            Process process = processBuilder.start();
+            process.waitFor();
+
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             InputSource inputStore = new InputSource(new FileInputStream(f));
             inputStore.setEncoding(ENCODING);
@@ -58,8 +57,8 @@ public class SynanParser {
                 }
             }
             return textSynan;
-            // } catch (InterruptedException | IOException | ParserConfigurationException | SAXException e) {
-        } catch (IOException | ParserConfigurationException | SAXException e) {
+        } catch (InterruptedException | IOException | ParserConfigurationException | SAXException e) {
+            e.printStackTrace();
             return null;
         }
     }

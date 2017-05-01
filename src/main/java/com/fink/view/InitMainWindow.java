@@ -65,7 +65,6 @@ public class InitMainWindow extends MainFrame {
             add(view);
 
             add(statusBar, BorderLayout.SOUTH);
-            onRun();
         } catch (SecurityException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
@@ -97,12 +96,12 @@ public class InitMainWindow extends MainFrame {
         if (!isRunning) {
             isRunning = true;
             Thread t = new Thread(() -> {
-                /*if (view.isEmpty()) {
-                 JOptionPane.showMessageDialog(InitMainWindow.this, "Документы не найдены", "Ошибка", JOptionPane.ERROR_MESSAGE);
-                 return;
-                 }*/
+                if (view.isEmpty()) {
+                    JOptionPane.showMessageDialog(InitMainWindow.this, "Документы не найдены", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 try {
-                    textAnalyze(view.getLeftText(), new File("answer4.xml"), new File("out.owl"));
+                    textAnalyze(view.getLeftText(), new File("out.owl"));
                     //textAnalyze(view.getRightText(), new File("answer2.xml"), new File("out2.owl"));
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -114,32 +113,32 @@ public class InitMainWindow extends MainFrame {
         }
     }
 
-    void textAnalyze(String text, File input, File out) throws Exception {
-        //if (!text.equals("")) {
-        try (OutputStream output = new FileOutputStream(TEMP_FILE)) {
-            byte[] b = text.getBytes(ENCODING);
-            output.write(b);
-        } catch (IOException ex) {
-            throw new AnalyzeException();
-        }
-        List<List<Rel>> textSynan = SynanParser.run(TEMP_FILE);
-        if (textSynan == null) {
-            throw new AnalyzeException();
-        }
-        List<Sent> sentList = SemanParser.run(TEMP_FILE);
-        if (sentList == null) {
-            throw new AnalyzeException();
-        }
-        OntologyCreator ontologyCreator = new OntologyCreator();
-        OWLOntology owlOntology = ontologyCreator.run(textSynan, sentList);
-        /*Reasoner reasoner = new Reasoner();
+    void textAnalyze(String text, File out) throws Exception {
+        if (!text.equals("")) {
+            try (OutputStream output = new FileOutputStream(TEMP_FILE)) {
+                byte[] b = text.getBytes(ENCODING);
+                output.write(b);
+            } catch (IOException ex) {
+                throw new AnalyzeException();
+            }
+            List<List<Rel>> textSynan = SynanParser.run(TEMP_FILE);
+            if (textSynan == null) {
+                throw new AnalyzeException();
+            }
+            List<Sent> sentList = SemanParser.run(TEMP_FILE);
+            if (sentList == null) {
+                throw new AnalyzeException();
+            }
+            OntologyCreator ontologyCreator = new OntologyCreator();
+            OWLOntology owlOntology = ontologyCreator.run(textSynan, sentList);
+            /*Reasoner reasoner = new Reasoner();
          reasoner.run(owlOntology);
          OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
          reasoner.run(manager.loadOntologyFromOntologyDocument(new File("./frames/main.owl")));*/
-        IRI destination = IRI.create(out.toURI());
-        owlOntology.getOWLOntologyManager().saveOntology(owlOntology, new OWLXMLDocumentFormat(), destination);
+            IRI destination = IRI.create(out.toURI());
+            owlOntology.getOWLOntologyManager().saveOntology(owlOntology, new OWLXMLDocumentFormat(), destination);
 
-        // }
+        }
     }
 
     public static JLabel getStatusBar() {
