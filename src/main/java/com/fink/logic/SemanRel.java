@@ -2,9 +2,9 @@ package com.fink.logic;
 
 public enum SemanRel {
 
-    AUTHOR, AGENT, ADR, IN_DIRECT, TIME, VALUE, IDENT, NAME, INSTR, SRC_PNT, C_AGENT,
-    QUANTIT, TRG_PNT, LOK, SCALE, MATER, PURP, OBJ, RESTR, ESTIM, PARAM, PACIEN,
-    MEDIATOR, PROPERT, BELNG, CAUSE, RESLT, CONTEN, METHOD, MEANS, DEGREE, SUB, THEME, AIM, PART,F_ACT,S_ACT ,ACT,UNDEFINED;
+    AUTHOR, AGENT, ADR, IN_DIRECT,  IN_ACCORD, TIME, TYPE_OF, VALUE, IDENT, NAME, INSTR, SRC_PNT, C_AGENT,
+    QUANTIT, TRG_PNT, LOK, SCALE, MATER, PURP, OBJ, RESTR, ESTIM, PARAM, PACIEN, WITH,
+    MEDIATOR, PROPERT, BELNG, CAUSE, RESLT, CONTEN, METHOD, MEANS, DEGREE, SUB, THEME, AIM, PART, F_ACT, S_ACT, ACT, UNDEFINED;
 
     public static SemanRel convert(String text) {
         switch (text) {
@@ -16,8 +16,12 @@ public enum SemanRel {
                 return ADR;
             case "IN-DIRECT":
                 return IN_DIRECT;
+            case "IN-ACCORD":
+                return  IN_ACCORD;
             case "TIME":
                 return TIME;
+            case "TYPE-OF":
+                return TYPE_OF;
             case "VALUE":
                 return VALUE;
             case "IDENT":
@@ -52,6 +56,8 @@ public enum SemanRel {
                 return PARAM;
             case "PACIEN":
                 return PACIEN;
+            case "WITH":
+                return WITH;
             case "MEDIATOR":
                 return MEDIATOR;
             case "PROPERT":

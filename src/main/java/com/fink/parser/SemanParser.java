@@ -28,18 +28,18 @@ public class SemanParser {
             return null;
         }
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder(rml + "/Bin/GraphmatThick", LANGUAGE, input, "-sents", TEMP_FILE2);
+            ProcessBuilder processBuilder = new ProcessBuilder(rml + "/Bin/GraphmatThick.exe", LANGUAGE, input, "-sents", TEMP_FILE2);
             Process process = processBuilder.start();
             process.waitFor();
             List<Sent> sentList = new ArrayList<>();
-            try (Scanner read = new Scanner(new File(TEMP_FILE2),ENCODING)) {
+            try (Scanner read = new Scanner(new File(TEMP_FILE2), ENCODING)) {
                 while (read.hasNext()) {
                     File temp = new File(TEMP_FILE3);
-                    try (PrintWriter out = new PrintWriter(temp,ENCODING)) {
+                    try (PrintWriter out = new PrintWriter(temp, ENCODING)) {
                         out.println(read.nextLine());
                     }
                     File f = new File(TEMP_FILE);
-                    processBuilder = new ProcessBuilder(rml + "/Bin/TestSeman");
+                    processBuilder = new ProcessBuilder(rml + "/Bin/TestSeman.exe");
                     processBuilder.redirectInput(temp);
                     processBuilder.redirectOutput(f);
                     process = processBuilder.start();
@@ -47,7 +47,7 @@ public class SemanParser {
 
                     List<Node> nodeList = new ArrayList<>();
                     List<Link> linkList = new ArrayList<>();
-                    try (Scanner reader = new Scanner(f,ENCODING)) {
+                    try (Scanner reader = new Scanner(f, ENCODING)) {
                         reader.nextLine();
                         reader.nextLine();
                         while (true) {
@@ -64,6 +64,7 @@ public class SemanParser {
                     } catch (FileNotFoundException ex) {
                     }
                     Sent sent = new Sent();
+                    //processingLink(linkList, nodeList);
                     sent.linkList = linkList;
                     sent.nodeList = nodeList;
                     sentList.add(sent);
@@ -76,10 +77,15 @@ public class SemanParser {
     }
 
     private static Node parseLine(String line) {
-        int search = line.indexOf(":") + 2;
+        int search = line.lastIndexOf(":") + 2;
         int searchSpace = line.indexOf(" ", search);
         Node node = new Node();
-        node.name = line.substring(search, searchSpace);
+        node.name = line.substring(search, searchSpace).trim();
+        if(node.name.equals("")){
+            search-=2;
+            searchSpace = line.lastIndexOf(" ", search);
+            node.name = line.substring(searchSpace,search).trim();
+        }
         return node;
     }
 
@@ -91,8 +97,36 @@ public class SemanParser {
         Link link = new Link();
         link.semanType = SemanRel.convert((new Scanner(line)).next());
         link.synanType = SyntaxRel.convert(line.substring(searchequals + 2, searchOpen - 1).trim().toUpperCase());
-        link.firstNodeNumber = Integer.parseInt(line.substring(searchOpen + 1, searchComma));
-        link.secondNodeNumber = Integer.parseInt(line.substring(searchComma + 2, searchClose));
+        if (link.semanType == SemanRel.BELNG || link.semanType == SemanRel.TYPE_OF) {
+            link.firstNodeNumber = Integer.parseInt(line.substring(searchComma + 2, searchClose));
+            link.secondNodeNumber = Integer.parseInt(line.substring(searchOpen + 1, searchComma));
+        } else {
+            link.firstNodeNumber = Integer.parseInt(line.substring(searchOpen + 1, searchComma));
+            link.secondNodeNumber = Integer.parseInt(line.substring(searchComma + 2, searchClose));
+        }
         return link;
     }
+
+    private static void processingLink(List<Link> linkList, List<Node> nodeList) {
+        int size = nodeList.size();
+        for (int i = 0; i < size; i++) {
+            if (nodeList.get(i).name.equals("И")) {
+                int size2 = linkList.size();
+                for (int j = 0; j < size2; j++) {
+                    if (linkList.get(j).firstNodeNumber == i) {
+                        for (Link link : linkList) {
+                            if(link.secondNodeNumber == i){
+                                link.secondNodeNumber = linkList.get(j).secondNodeNumber;
+                                link.semanType = linkList.get(j).semanType;
+                            }
+                        }
+                        linkList.remove(j);
+                        j--;
+                        size2--;
+                    }
+                }
+            }
+        }
+    }
+
 }

@@ -103,10 +103,12 @@ public class InitMainWindow extends MainFrame {
                 try {
                     textAnalyze(view.getLeftText(), new File("out.owl"));
                     //textAnalyze(view.getRightText(), new File("answer2.xml"), new File("out2.owl"));
+                    JOptionPane.showMessageDialog(InitMainWindow.this, "Успех", "Сообщение", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(InitMainWindow.this, "В ходе анализа произошла ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
+                
                 isRunning = false;
             });
             t.start();

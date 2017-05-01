@@ -20,7 +20,7 @@ import org.xml.sax.SAXException;
 public class SynanParser {
 
     private static final String ENCODING = "WINDOWS-1251";
-    private static final String TEMP_FILE2 = "temp2.txt";
+    private static final String TEMP_FILE2 = "temp4.txt";
     private static final String LANGUAGE = "Russian";
     private static final String SENTENCE = "sent";
     private static final String NAME = "name";
@@ -37,7 +37,7 @@ public class SynanParser {
         }
         File f = new File(TEMP_FILE2);
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder(rml + "/Bin/TestSynan", LANGUAGE, input);
+            ProcessBuilder processBuilder = new ProcessBuilder(rml + "/Bin/TestSynan.exe", LANGUAGE, input);
             processBuilder.redirectOutput(f);
             Process process = processBuilder.start();
             process.waitFor();

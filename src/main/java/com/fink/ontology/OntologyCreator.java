@@ -1,12 +1,14 @@
 package com.fink.ontology;
 
 import com.fink.logic.Link;
+import com.fink.logic.Node;
 import com.fink.logic.Rel;
 import com.fink.logic.SemanRel;
 import com.fink.logic.Sent;
 import com.fink.logic.SyntaxRel;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -104,7 +106,7 @@ public class OntologyCreator {
                                 }
                             }
                             if (secondLemma.equals("")) {
-                                continue;
+                                secondLemma = sent.nodeList.get(link.firstNodeNumber).name;
                             }
                             owlIndividual = getIndividual(processingSysh(relList, sent, secondLemma, link.firstNodeNumber));
                             addNewEquivalent(podlOwlClass, owlObjectProperty, owlIndividual);
@@ -152,7 +154,11 @@ public class OntologyCreator {
         }
     }
 
-    void addClassEquivalent(OWLClass owlClassDomain, OWLClass owlClassRange) {
+    boolean isClassEquivalent(OWLClass owlClass) {
+        return !owlOntology.getEquivalentClassesAxioms(owlClass).isEmpty();
+    }
+
+    void addClassEquivalent(OWLClass owlClassDomain, OWLClassExpression owlClassRange) {
         Set<OWLEquivalentClassesAxiom> equivalentClassesAxioms = owlOntology.getEquivalentClassesAxioms(owlClassDomain);
         if (equivalentClassesAxioms.isEmpty()) {
             OWLEquivalentClassesAxiom owlEquivalentClassesAxiom = factory.getOWLEquivalentClassesAxiom(owlClassDomain, owlClassRange);
@@ -317,15 +323,17 @@ public class OntologyCreator {
                 Rel rel = resList.get(i);
                 String replace = rel.lemma_child + "_" + rel.lemma_parent;
                 OWLClass owlClass = getClass(replace);
-                OWLIndividual owlIndividual = getIndividual(rel.lemma_child);
-                OWLObjectProperty owlObjectProperty = getObjectProperty("БЫТЬ");
-                if (!rel.lemma_parent.contains("_")) {
-                    addClassEquivalent(owlClass, getClass(rel.lemma_parent));
-                } else {
-                    copyEquivalent(getClass(rel.lemma_parent), owlClass);
-                }
+                if (!isClassEquivalent(owlClass)) {
+                    OWLIndividual owlIndividual = getIndividual(rel.lemma_child);
+                    OWLObjectProperty owlObjectProperty = getObjectProperty("БЫТЬ");
+                    if (!rel.lemma_parent.contains("_")) {
+                        addClassEquivalent(owlClass, getClass(rel.lemma_parent));
+                    } else {
+                        copyEquivalent(getClass(rel.lemma_parent), owlClass);
+                    }
 
-                addEquivalent(owlClass, owlObjectProperty, owlIndividual);
+                    addEquivalent(owlClass, owlObjectProperty, owlIndividual);
+                }
                 for (int j = i + 1; j < size; j++) {
                     if (resList.get(j).lemma_parent.equals(resList.get(i).lemma_parent)) {
                         resList.get(j).lemma_parent = replace;
@@ -362,24 +370,31 @@ public class OntologyCreator {
     String dfs(int position, List<Rel> relList, Sent sent, String lem) {
         SemanRel type;
         String lemma;
-        String secondLemma = "";
         String lemma2 = null;
         for (Link link : sent.linkList) {
             if (link.secondNodeNumber == position && link.synanType != SyntaxRel.PRIL_CYSCH) {
                 type = link.semanType;
                 lemma = sent.nodeList.get(link.firstNodeNumber).name;
-                for (Rel relList1 : relList) {
-                    if (relList1.start_lemma_child.equals(lemma)) {
-                        secondLemma = relList1.lemma_child;
-                        break;
-                    } else if (relList1.start_lemma_parent.equals(lemma)) {
-                        secondLemma = relList1.lemma_parent;
-                        break;
+                if (lemma.equals("И")) {
+                    List<Integer> lemList = new ArrayList<>();
+                    for (Link link2 : sent.linkList) {
+                        if (link2.secondNodeNumber == link.firstNodeNumber) {
+                            lemList.add(link2.firstNodeNumber);
+                        }
                     }
+                    if (lemList.size() == 2) {
+                        String lem1 = dfs(lemList.get(0), relList, sent, getLastLemma(relList, sent.nodeList.get(lemList.get(0)).name));
+                        String lem2 = dfs(lemList.get(1), relList, sent, getLastLemma(relList, sent.nodeList.get(lemList.get(1)).name));
+                        lemma2 = lem1;
+                        createAnd(lem1, lem2);
+                        lem = lem1 + "_И_" + lem2;
+                    }
+                } else {
+                    lemma2 = dfs(link.firstNodeNumber, relList, sent, getLastLemma(relList, lemma));
+                    convert(lem, lemma2, type);
+                    lem += "_" + lemma2;
                 }
-                lemma2 = dfs(link.firstNodeNumber, relList, sent, secondLemma);
-                convert(lem, lemma2, type);
-                lem += "_" + lemma2;
+
             }
         }
         if (lemma2 == null) {
@@ -388,8 +403,16 @@ public class OntologyCreator {
         return lem;
     }
 
+    void createAnd(String first, String second) {
+        OWLClass owlClass = getClass(first + "_И_" + second);
+        addClassEquivalent(owlClass, factory.getOWLObjectIntersectionOf(getClass(first), getClass(second)));
+    }
+
     void convert(String first, String second, SemanRel type) {
         OWLClass owlClass = getClass(first + "_" + second);
+        if(isClassEquivalent(owlClass)){
+            return;
+        }
         OWLObjectProperty owlObjectProperty = null;
         OWLIndividual owlIndividual = getIndividual(second);
         switch (type) {
@@ -398,12 +421,21 @@ public class OntologyCreator {
             case AGENT:
                 break;
             case ADR:
+                owlObjectProperty = getObjectProperty("АДРЕСАТ");
                 break;
             case IN_DIRECT:
                 break;
+            case IN_ACCORD:
+                owlObjectProperty = getObjectProperty("В_СООТВЕТСТВИИ_С");
+                break;
             case TIME:
+                owlObjectProperty = getObjectProperty("ИМЕТЬ_ВРЕМЯ");
+                break;
+            case TYPE_OF:
+                owlObjectProperty = getObjectProperty("ИМЕТЬ_ТИП");
                 break;
             case VALUE:
+                owlObjectProperty = getObjectProperty("ИМЕТЬ_ЗНАЧЕНИЕ");
                 break;
             case IDENT:
                 break;
@@ -416,6 +448,7 @@ public class OntologyCreator {
             case C_AGENT:
                 break;
             case QUANTIT:
+                owlObjectProperty = getObjectProperty("КОЛИЧЕСТВО");
                 break;
             case TRG_PNT:
                 break;
@@ -429,14 +462,19 @@ public class OntologyCreator {
             case PURP:
                 break;
             case OBJ:
+                owlObjectProperty = getObjectProperty("ИМЕТЬ_ОБЪЕКТ");
                 break;
             case RESTR:
                 break;
             case ESTIM:
                 break;
             case PARAM:
+                owlObjectProperty = getObjectProperty("ИМЕТЬ_ХАРАКТЕРИСТИКУ");
                 break;
             case PACIEN:
+                break;
+            case WITH:
+                owlObjectProperty = getObjectProperty("ВМЕСТЕ_С");
                 break;
             case MEDIATOR:
                 break;
@@ -450,6 +488,7 @@ public class OntologyCreator {
             case RESLT:
                 break;
             case CONTEN:
+                owlObjectProperty = getObjectProperty("СОДЕРЖАТЬ");
                 break;
             case METHOD:
                 break;
@@ -465,6 +504,7 @@ public class OntologyCreator {
             case AIM:
                 break;
             case PART:
+                owlObjectProperty = getObjectProperty("ЧАСТЬ");
                 break;
             case F_ACT:
                 break;
@@ -485,6 +525,23 @@ public class OntologyCreator {
             }
             addEquivalent(owlClass, owlObjectProperty, owlIndividual);
         }
+    }
+
+    String getLastLemma(List<Rel> relList, String lemma) {
+        String secondLemma = "";
+        for (Rel relList1 : relList) {
+            if (relList1.start_lemma_child.equals(lemma)) {
+                secondLemma = relList1.lemma_child;
+                break;
+            } else if (relList1.start_lemma_parent.equals(lemma)) {
+                secondLemma = relList1.lemma_parent;
+                break;
+            }
+        }
+        if (secondLemma.equals("")) {
+            return lemma;
+        }
+        return secondLemma;
     }
 
     void printRel(List<Rel> resList) {
